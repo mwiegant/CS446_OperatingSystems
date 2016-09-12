@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include "Simulation.h"
+
 using namespace std;
 
 // todo - handle user not passing in a filename
@@ -7,6 +9,10 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
+  Simulation *simulation = new Simulation();
+  string metadataFilePath;
+
+
   // check if the user provided enough arguments
   if( argc != 2 )
   {
@@ -14,7 +20,12 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  cout << "#DEBUG - provided filename: " << argv[1] << endl;
+  // prove that I can interact with the Simulation object
+  simulation->showSimulationSettings();
+
+
+  // setup the Simulation object and start reading in the config file
+  // todo
 
 
   return 0;
