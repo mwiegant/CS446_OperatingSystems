@@ -46,7 +46,6 @@ bool Simulation::readInConfig(char filePath[])
 
   }
 
-
   fin.close();
 
   return readFile;
