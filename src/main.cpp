@@ -1,6 +1,8 @@
 #include <iostream>
 
 #include "Simulation.h"
+#include "Metadata.h"
+#include "Processor.h"
 
 using namespace std;
 
@@ -8,6 +10,9 @@ using namespace std;
 int main(int argc, char **argv)
 {
   Simulation *simulation = new Simulation();
+  Metadata *metadata = new Metadata();
+//  Processor *processor = new Processor();
+
   string metadataFilePath;
 
 
@@ -31,8 +36,15 @@ int main(int argc, char **argv)
   // get the metadata file from the simulation
   metadataFilePath = simulation->getMetadataFilePath();
 
+  // setup the Processor object and start reading in the metadata file
+  if( !metadata->readInMetadata( metadataFilePath ) )
+  {
+    cout << "Error - Failed to read in the metadata file at: " << metadataFilePath << endl;
+    return -2;
+  }
 
-  // todo - get stuff to the processor class
+  // todo - run the simulation
+
 
 
   return 0;
