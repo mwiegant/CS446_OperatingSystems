@@ -4,8 +4,6 @@
 
 using namespace std;
 
-// todo - handle user not passing in a filename
-// todo - implement Simulation object
 
 int main(int argc, char **argv)
 {
@@ -20,12 +18,21 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  // prove that I can interact with the Simulation object
+  // setup the Simulation object and start reading in the config file
+  if( !simulation->readInConfig(argv[1]) )
+  {
+    cout << "Error - Failed to read in the config file at: " << argv[1] << endl;
+    return -2;
+  }
+
+  // prove that I can get data stored into the Simulation object
   simulation->showSimulationSettings();
 
+  // get the metadata file from the simulation
+  metadataFilePath = simulation->getMetadataFilePath();
 
-  // setup the Simulation object and start reading in the config file
-  // todo
+
+  // todo - get stuff to the processor class
 
 
   return 0;

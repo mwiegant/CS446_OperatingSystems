@@ -3,6 +3,9 @@
 
 #include <cstdio>
 #include <string>
+#include <fstream>
+#include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -11,13 +14,20 @@ class Simulation
   public:
     Simulation();
     ~Simulation();
-    bool readInConfig(string filePath);
+    bool readInConfig(char filePath[]);
     string getMetadataFilePath();
 
     // Utility Functions
     void showSimulationSettings();
 
   private:
+    // Private Functions
+    void splitString(string theString, char delimiter, vector<string> &theSplitString);
+    void extractData(string fileData);
+    void processData(string label, string data);
+
+
+
     float osVersion;
     string mdf_filePath;
     string cpuSchedulingCode;
@@ -28,10 +38,13 @@ class Simulation
     int hardDriveCycleTime;
     int printerCycleTime;
     int keyboardCycleTime;
+    int memoryCycleTime;
+    int systemMemory;
 
     // Log File
+    bool logToConsole;
     bool logToFile;
-    string logfilePath;
+    string logFilePath;
 
 
 };
