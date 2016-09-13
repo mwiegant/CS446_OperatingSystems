@@ -185,32 +185,6 @@ void Simulation::processData(string label, string data)
 
 
 /*
-int processorCycleTime;
-int monitorDisplayTime;
-int hardDriveCycleTime;
-int printerCycleTime;
-int keyboardCycleTime;
-int memoryCycleTime;
-int systemMemory;
-bool logToConsole;
-bool logToFile;
-string logfilePath;
-    
-Version/Phase: 1.0
-File Path: test_1a.mdf
-Processor cycle time (msec): 10
-Monitor display time (msec): 25
-Hard drive cycle time (msec): 50
-Printer cycle time (msec): 500
-Keyboard cycle time (msec): 1000
-Memory cycle time (msec): 35
-System memory (kbytes): 65536
-Log: Log to Both
-Log File Path: output/output_1.out
- */
-
-
-/*
  * Return the path to the metadata file, as found in the configuration file
  */
 string Simulation::getMetadataFilePath()
