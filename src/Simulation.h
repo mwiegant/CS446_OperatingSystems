@@ -14,20 +14,30 @@ class Simulation
   public:
     Simulation();
     ~Simulation();
-    bool readInConfig(char filePath[]);
-    string getMetadataFilePath();
 
-    // Utility Functions
+    // Getters
+    string getMetadataFilePath();
+    int getProcessorCycleTime();
+    int getMonitorDisplayTime();
+    int getHardDriveCycleTime();
+    int getPrinterCycleTime();
+    int getKeyboardCycleTime();
+    int getMemoryCycleTime();
+
+    // Utility Function
     void showSimulationSettings();
 
+    bool readInConfig(char filePath[]);
+
   private:
-    // Private Functions
-    void splitString(string theString, char delimiter, vector<string> &theSplitString);
+    // for extracting and parsing in the config file
     void extractData(string fileData);
     void processData(string label, string data);
 
+    // additional helper function for parsing
+    void splitString(string theString, char delimiter, vector<string> &theSplitString);
 
-
+    // Configuration Information
     float osVersion;
     string mdf_filePath;
     string cpuSchedulingCode;
