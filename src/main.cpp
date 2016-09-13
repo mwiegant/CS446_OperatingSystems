@@ -2,6 +2,7 @@
 
 #include "Simulation.h"
 #include "Metadata.h"
+#include "Logger.h"
 #include "Processor.h"
 
 using namespace std;
@@ -11,7 +12,7 @@ int main(int argc, char **argv)
 {
   Simulation *simulation = new Simulation();
   Metadata *metadata = new Metadata();
-//  Processor *processor = new Processor();
+  Processor *processor = new Processor();
 
   string metadataFilePath;
 
@@ -43,7 +44,7 @@ int main(int argc, char **argv)
     return -2;
   }
 
-  // todo - run the simulation
+
 
 
 
