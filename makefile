@@ -1,12 +1,14 @@
-# ./simOX os_files/config_1.conf
+# Max Wiegant
+# 9 - 10 - 16
+# Make Peace, not Bugs
 
 CC = g++
 DEBUG = -g
 CFLAGS = -Wall -c
 LFLAGS = -Wall
 
-simOX : src/main.cpp Processor.o Logger.o Metadata.o Simulation.o
-	$(CC) $(LFLAGS) src/main.cpp Processor.o Logger.o Metadata.o Simulation.o -o simOX
+SimO1 : src/main.cpp Processor.o Logger.o Metadata.o Simulation.o
+	$(CC) $(LFLAGS) src/main.cpp Processor.o Logger.o Metadata.o Simulation.o -o Sim01
 
 Processor.o : Processor.o src/Processor.cpp
 	$(CC) $(CFLAGS) src/Processor.cpp
@@ -22,5 +24,5 @@ Simulation.o : Simulation.o src/Simulation.cpp
 
 
 clean:
-	\rm *.o simOX
+	\rm *.o SimO1
 
