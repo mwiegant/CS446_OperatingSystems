@@ -48,7 +48,7 @@ int main(int argc, char **argv)
   processor->setLogger(logger);
 
   // process metadata instructions
-//  processor->processInstructions(simulation, metadata);
+  processor->processInstructions(*simulation, metadata);
 
 
   return 0;
