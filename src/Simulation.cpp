@@ -26,45 +26,84 @@ Simulation::~Simulation()
 
 
 /*
- * --- BEGIN - GETTERS ---
+ * Get the path for the metadata file
  */
 string Simulation::getMetadataFilePath()
 {
   return mdf_filePath;
 }
 
-int Simulation::getProcessorCycleTime()
-{
-  return processorCycleTime;
-}
 
-int Simulation::getMonitorDisplayTime()
-{
-  return monitorDisplayTime;
-}
-
-int Simulation::getHardDriveCycleTime()
-{
-  return hardDriveCycleTime;
-}
-
-int Simulation::getPrinterCycleTime()
-{
-  return printerCycleTime;
-}
-
-int Simulation::getKeyboardCycleTime()
-{
-  return keyboardCycleTime;
-}
-
-int Simulation::getMemoryCycleTime()
-{
-  return memoryCycleTime;
-}
 /*
- * --- END - GETTERS ---
+ * Get the desired cycle time for a device based on
+ * the code and the descriptor provided
  */
+int Simulation::getCycleTime(char code, string descriptor)
+{
+  int cycleTime = 0;
+
+  // determine which cycle time to return, based on the code
+  switch(code)
+  {
+    // case P
+    case 'P':
+
+      if( descriptor == "run" )
+      {
+        cycleTime = processorCycleTime;
+      }
+      break;
+
+    // case I
+    case "I":
+
+      if( descriptor == "hard drive" )
+      {
+        cycleTime = hardDriveCycleTime;
+      }
+      else if( descriptor == "monitor")
+      {
+        cycleTime = monitorDisplayTime;
+      }
+      else if( descriptor == "keyboard")
+      {
+        cycleTime = keyboardCycleTime;
+      }
+      break;
+
+    // case O
+    case "O":
+
+      if( descriptor == "hard drive" )
+      {
+        cycleTime = hardDriveCycleTime;
+      }
+      else if( descriptor == "monitor")
+      {
+        cycleTime = monitorDisplayTime;
+      }
+      else if( descriptor == "printer" )
+      {
+        cycleTime = printerCycleTime;
+      }
+      break;
+
+    // case M
+    case "M":
+
+      if( descriptor == "allocate" )
+      {
+        cycleTime = memoryCycleTime;
+      }
+      else if( descriptor == "cache")
+      {
+        cycleTime = memoryCycleTime;
+      }
+      break;
+  }
+
+  return cycleTime;
+}
 
 
 /*
@@ -334,5 +373,7 @@ void Simulation::logSimulationSettings()
   // finally, log where the simulation is logging
   logger->log(message);
 
+  // log an empty line
+  logger->log("");
 }
 

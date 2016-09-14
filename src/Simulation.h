@@ -18,12 +18,7 @@ class Simulation
 
     // Getters
     string getMetadataFilePath();
-    int getProcessorCycleTime();
-    int getMonitorDisplayTime();
-    int getHardDriveCycleTime();
-    int getPrinterCycleTime();
-    int getKeyboardCycleTime();
-    int getMemoryCycleTime();
+    int getCycleTime(char code, string descriptor);
 
     // Configuration Functions
     void setLogger(Logger *theLogger);
