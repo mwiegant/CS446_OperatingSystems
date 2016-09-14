@@ -17,6 +17,8 @@ class Metadata
   public:
     Metadata();
     ~Metadata();
+
+    bool fetchNextInstruction(char& code, string& descriptor, int& cycles);
     bool readInMetadata(string filePath);
 
 private:
@@ -29,7 +31,7 @@ private:
   void splitString(string theString, char delimiter1, char delimiter2, vector<string> &theSplitString);
   void removeExtraWhitespace(string &str);
 
-  // struct for holding metadata commands
+  // struct for holding metadata instructions
   struct Instruction
   {
       char code;
@@ -37,7 +39,7 @@ private:
       int cycles;
   };
 
-  // for holding all the metadata commands
+  // for holding all the metadata instructions
   queue<Instruction> instructions;
 
 };
