@@ -198,7 +198,7 @@ void Metadata::addMetadata(string metadata)
   newInstruction.cycles = stoi(tokens[2]);
 
   // push this new metadata into the list of instructions
-  instructions.insert(instructions.begin(), newInstruction);
+  instructions.push(newInstruction);
 }
 
 

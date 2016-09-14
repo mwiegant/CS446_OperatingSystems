@@ -1,12 +1,14 @@
 #ifndef OPERATING_SYSTEM_METADATA_H
 #define OPERATING_SYSTEM_METADATA_H
 
-#include <list>
+// todo - remove iostream after I am confident Processor is processing instructions
+#include <iostream>
+
+#include <queue>
 #include <vector>
 #include <string>
 #include <cstring>
 #include <fstream>
-#include <iostream>
 
 using namespace std;
 
@@ -36,8 +38,7 @@ private:
   };
 
   // for holding all the metadata commands
-  list<Instruction> instructions;
-  list<Instruction>::iterator instruction;
+  queue<Instruction> instructions;
 
 };
 
