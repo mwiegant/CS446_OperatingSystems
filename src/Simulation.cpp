@@ -142,11 +142,15 @@ bool Simulation::readInConfig(char filePath[])
 
   fin.close();
 
-  // turn the logger on
-  turnLoggerOn();
+  // check if the file was read
+  if( readFile == true ){
 
-  // log the configuration of the simulation
-  logSimulationSettings();
+    // turn the logger on
+    turnLoggerOn();
+
+    // log the configuration of the simulation
+    logSimulationSettings();
+  }
 
   return readFile;
 }
