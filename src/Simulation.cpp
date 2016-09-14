@@ -55,7 +55,7 @@ int Simulation::getCycleTime(char code, string descriptor)
       break;
 
     // case I
-    case "I":
+    case 'I':
 
       if( descriptor == "hard drive" )
       {
@@ -72,7 +72,7 @@ int Simulation::getCycleTime(char code, string descriptor)
       break;
 
     // case O
-    case "O":
+    case 'O':
 
       if( descriptor == "hard drive" )
       {
@@ -89,7 +89,7 @@ int Simulation::getCycleTime(char code, string descriptor)
       break;
 
     // case M
-    case "M":
+    case 'M':
 
       if( descriptor == "allocate" )
       {
