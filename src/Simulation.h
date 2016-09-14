@@ -4,8 +4,9 @@
 #include <cstdio>
 #include <string>
 #include <fstream>
-#include <iostream>
 #include <vector>
+
+#include "Logger.h"
 
 using namespace std;
 
@@ -24,9 +25,8 @@ class Simulation
     int getKeyboardCycleTime();
     int getMemoryCycleTime();
 
-    // Utility Function
-    void showSimulationSettings();
-
+    // Configuration Functions
+    void setLogger(Logger *theLogger);
     bool readInConfig(char filePath[]);
 
   private:
@@ -34,8 +34,12 @@ class Simulation
     void extractData(string fileData);
     void processData(string label, string data);
 
-    // additional helper function for parsing
+    // Additional Parser Helper Functions
     void splitString(string theString, char delimiter, vector<string> &theSplitString);
+
+    // Logger Interaction Functions
+    void turnLoggerOn();
+    void logSimulationSettings();
 
     // Configuration Information
     float osVersion;
@@ -52,11 +56,12 @@ class Simulation
     int systemMemory;
 
     // Log File
-    bool logToConsole;
+    bool logToMonitor;
     bool logToFile;
     string logFilePath;
 
-
+    // Logging Object
+    Logger *logger;
 };
 
 #endif //OPERATING_SYSTEM_SIMULATION_H

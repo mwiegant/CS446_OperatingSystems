@@ -14,7 +14,7 @@ Simulation::Simulation()
   memoryCycleTime = 0;
   systemMemory = 0;
 
-  logToConsole = false;
+  logToMonitor = false;
   logToFile = false;
   logFilePath = "";
 }
@@ -68,30 +68,11 @@ int Simulation::getMemoryCycleTime()
 
 
 /*
- * Output all settings from the simulation to the console
+ * Provide a logger for output within this class
  */
-void Simulation::showSimulationSettings()
+void Simulation::setLogger(Logger *theLogger)
 {
-  string _logToFile = (logToFile) ? "yes" : "no";
-  string _logToMonitor = (logToConsole) ? "yes" : "no";
-
-
-  fprintf(stdout, "Simulation Settings\n");
-  fprintf(stdout, "-------------------\n");
-  fprintf(stdout, "osVersion          : %f\n", osVersion);
-  fprintf(stdout, "msf_filePath       : %s\n", mdf_filePath.c_str());
-//  fprintf(stdout, "cpuSchedulingCode  : %s\n", cpuSchedulingCode.c_str());
-  fprintf(stdout, "processorCycleTime : %d\n", processorCycleTime);
-  fprintf(stdout, "monitorDisplayTime : %d\n", monitorDisplayTime);
-  fprintf(stdout, "hardDriveCycleTime : %d\n", hardDriveCycleTime);
-  fprintf(stdout, "printerCycleTime   : %d\n", printerCycleTime);
-  fprintf(stdout, "keyboardCycleTime  : %d\n", keyboardCycleTime);
-  fprintf(stdout, "memoryCycleTime    : %d\n", memoryCycleTime);
-  fprintf(stdout, "systemMemory       : %d\n", systemMemory);
-  fprintf(stdout, "log to monitor     : %s\n", _logToMonitor.c_str());
-  fprintf(stdout, "log to file        : %s\n", _logToFile.c_str());
-  fprintf(stdout, "logFilePath        : %s\n", logFilePath.c_str());
-
+  logger = theLogger;
 }
 
 
@@ -121,6 +102,12 @@ bool Simulation::readInConfig(char filePath[])
   }
 
   fin.close();
+
+  // turn the logger on
+  turnLoggerOn();
+
+  // log the configuration of the simulation
+  logSimulationSettings();
 
   return readFile;
 }
@@ -212,7 +199,7 @@ void Simulation::processData(string label, string data)
     // determine where to log, based on the value of data
     if(data == "Both")
     {
-      logToConsole = true;
+      logToMonitor = true;
       logToFile = true;
     }
     else if(data == "File")
@@ -221,7 +208,7 @@ void Simulation::processData(string label, string data)
     }
     else if(data == "Monitor")
     {
-      logToConsole = true;
+      logToMonitor = true;
     }
   }
 
@@ -267,3 +254,85 @@ void Simulation::splitString(string theString, char delimiter, vector<string> &t
   // push the final portion of the tempString to theSplitString
   theSplitString.push_back(tempString);
 }
+
+
+/*
+ * Enables logging on the logger
+ */
+void Simulation::turnLoggerOn()
+{
+  // check if monitor logging should be enabled
+  if(logToMonitor)
+  {
+    logger->enableMonitorLogging();
+  }
+
+  // check if file logging should be enabled
+  if(logToFile)
+  {
+    logger->enableLoggingToFile( logFilePath );
+  }
+}
+
+/*
+ * Output all settings from the simulation to the console
+ */
+void Simulation::logSimulationSettings()
+{
+  string message;
+  vector<string> logfilePathTokens;
+
+  // begin logging to the file
+  logger->log("Configuration File Data");
+
+  // log processor settings
+  message = "Processor = " + to_string(processorCycleTime) + " ms/cycle";
+  logger->log(message);
+
+  // log monitor settings
+  message = "Monitor = " + to_string(monitorDisplayTime) + " ms/cycle";
+  logger->log(message);
+
+  // log hard drive settings
+  message = "Hard Drive = " + to_string(hardDriveCycleTime) + " ms/cycle";
+  logger->log(message);
+
+  // log printer settings
+  message = "Printer = " + to_string(printerCycleTime) + " ms/cycle";
+  logger->log(message);
+
+  // log keyboard settings
+  message = "Keyboard = " + to_string(keyboardCycleTime) + " ms/cycle";
+  logger->log(message);
+
+  // log memory settings
+  message = "Memory = " + to_string(memoryCycleTime) + " ms/cycle";
+  logger->log(message);
+
+  // setup the message to log the settings on where the simulation is logging
+  message = "Logged to: ";
+
+  if(logToMonitor && logToFile)
+  {
+    // extract the filename from the filepath
+    splitString(logFilePath, '/', logfilePathTokens);
+
+    message += "monitor and " + logfilePathTokens[ logfilePathTokens.size() - 1 ];
+  }
+  else if(logToMonitor)
+  {
+    message += "monitor";
+  }
+  else if(logToFile)
+  {
+    // extract the filename from the filepath
+    splitString(logFilePath, '/', logfilePathTokens);
+
+    message += logfilePathTokens[ logfilePathTokens.size() - 1 ];
+  }
+
+  // finally, log where the simulation is logging
+  logger->log(message);
+
+}
+
