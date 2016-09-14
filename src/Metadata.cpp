@@ -10,6 +10,33 @@ Metadata::~Metadata()
 
 }
 
+
+/*
+ * Returns the data for the next metadata instruction,
+ * if there are any metadata instructions left
+ */
+bool Metadata::fetchNextInstruction(char& code, string& descriptor, int& cycles)
+{
+  Instruction instruction;
+
+  // check if there are no instructions left
+  if( instructions.empty() )
+  {
+    return false;
+  }
+
+  // fetch the first instruction
+  instruction = instructions.front();
+
+  // update parameters with the values stored in the instruction
+  code = instruction.code;
+  descriptor = instruction.descriptor;
+  cycles = instruction.cycles;
+
+  return true;
+}
+
+
 /*
  *  Read in the entire metadata file.
  */
