@@ -1,9 +1,6 @@
 #ifndef OPERATING_SYSTEM_METADATA_H
 #define OPERATING_SYSTEM_METADATA_H
 
-// todo - remove iostream after I am confident Processor is processing instructions
-#include <iostream>
-
 #include <queue>
 #include <vector>
 #include <string>

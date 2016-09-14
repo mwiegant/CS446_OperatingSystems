@@ -28,6 +28,9 @@ bool Metadata::fetchNextInstruction(char& code, string& descriptor, int& cycles)
   // fetch the first instruction
   instruction = instructions.front();
 
+  // remove the first instruction now that it's been fetched
+  instructions.pop();
+
   // update parameters with the values stored in the instruction
   code = instruction.code;
   descriptor = instruction.descriptor;
@@ -211,10 +214,6 @@ void Metadata::addMetadata(string metadata)
 
   // trim whitespace from the metadata string
   removeExtraWhitespace(metadata);
-
-
-  cout << "metadata: " << metadata << endl;
-
 
   // split metadata into separate tokens, split up by ( and )
   splitString(metadata, '(', ')', tokens);
