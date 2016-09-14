@@ -1,6 +1,8 @@
 #ifndef OPERATING_SYSTEM_PROCESSOR_H
 #define OPERATING_SYSTEM_PROCESSOR_H
 
+#include <string>
+
 #include "Simulation.h"
 #include "Metadata.h"
 #include "Logger.h"
@@ -15,7 +17,7 @@ class Processor
     ~Processor();
     void setLogger(Logger *theLogger);
 
-    void processInstructions(const Simulation simulation, Metadata metadata);
+    void processInstructions(Simulation simulation, Metadata *metadata);
 
   private:
     Logger *logger;
