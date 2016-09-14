@@ -10,6 +10,15 @@ Processor::~Processor()
 
 }
 
+void Processor::setLogger(Logger *theLogger)
+{
+  logger = theLogger;
+}
+
+void Processor::processInstructions(const Simulation simulation, Metadata metadata)
+{
+  // todo
+}
 
 
 

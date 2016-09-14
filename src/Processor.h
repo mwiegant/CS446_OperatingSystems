@@ -13,13 +13,12 @@ class Processor
   public:
     Processor();
     ~Processor();
-    void begin(); //todo
+    void setLogger(Logger *theLogger);
 
-
+    void processInstructions(const Simulation simulation, Metadata metadata);
 
   private:
-
-
+    Logger *logger;
 
 };
 
