@@ -27,10 +27,10 @@ int main(int argc, char **argv)
   // setup logger for simulation
   simulation->setLogger(logger);
 
-  // read in the config file
-  if( !simulation->readInConfig(argv[1]) )
+  // initialize the simulation
+  if( !simulation->Initialize(argv[1]) )
   {
-    cout << "Error - Failed to read in the config file at: " << argv[1] << endl;
+    cout << "Error - Failed to initialize the simulation." << endl;
     return -2;
   }
 
