@@ -4,12 +4,12 @@
 
 CC = g++
 DEBUG = -g
-CFLAGS = -Wall -c
-LFLAGS = -Wall
-SOURCE = ../src/
+CFLAGS = -Wall -c -std=c++11
+LFLAGS = -Wall -std=c++11
+SOURCE = src/
 
 SimO1 : $(SOURCE)main.cpp Logger.o Simulation.o MetaFileParser.o ConfigFileParser.o FileParser.o
-	$(CC) $(LFLAGS) $(SOURCE)main.cpp Logger.o Simulation.o MetaFileParser.o ConfigFileParser.o FileParser.o -o Sim01
+	$(CC) $(LFLAGS) $(SOURCE)main.cpp Logger.o Simulation.o MetaFileParser.o ConfigFileParser.o FileParser.o -o simOX
 
 Logger.o : Logger.o $(SOURCE)Logger.cpp
 	$(CC) $(CFLAGS) $(SOURCE)Logger.cpp
