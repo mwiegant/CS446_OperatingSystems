@@ -204,7 +204,7 @@ void Metadata::extractMetadataFromLine(string fileData)
 
 
 /*
- * Takes in a single metadata instruction and parses it into an instructino object that can be
+ * Takes in a single metadata instruction and parses it into an instruction object that can be
  * added to the set of instructions to eventually run
  */
 void Metadata::addMetadata(string metadata)
