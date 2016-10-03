@@ -3,7 +3,6 @@
 Simulation::Simulation()
 {
   osVersion = 0.0f;
-  mdf_filePath = "";
   cpuSchedulingCode = "";
 
   processorCycleTime = 0;
@@ -37,7 +36,7 @@ Simulation::~Simulation()
 bool Simulation::Initialize(char filePath[])
 {
   ConfigFileParser* configFileParser = new ConfigFileParser();
-
+  MetaFileParser* metaFileParser = new MetaFileParser();
 
   // read in the config file
   if( !configFileParser->readInConfig(filePath) )
@@ -69,9 +68,19 @@ bool Simulation::Initialize(char filePath[])
   // log the configuration of the simulation
   logSimulationSettings();
 
+  // read in the metadata file
+  if( !metaFileParser->readInMetadata(mdf_filePath, instructionsQueue) )
+  {
+    printf("Error - failed to read in the metadata file at %s.\n", mdf_filePath);
+    return false;
+  }
 
   // clean up file parsing objects
   delete configFileParser;
+  delete metaFileParser;
+
+  configFileParser = NULL;
+  metaFileParser = NULL;
 
   return true;
 }
@@ -82,103 +91,12 @@ bool Simulation::Initialize(char filePath[])
  *
  * This function will kick off my entire simulation.
  */
-bool Simulation::Run(Metadata *metadata)
+bool Simulation::Run()
 {
 
-  processInstructions(metadata);
+  processInstructions();
 
   return true;
-}
-
-
-
-/*
- * Get the path for the metadata file
- */
-string Simulation::getMetadataFilePath()
-{
-  return mdf_filePath;
-}
-
-
-/*
- * Get the desired cycle time for a device based on
- * the code and the descriptor provided
- */
-int Simulation::getCycleTime(char code, string descriptor)
-{
-  int cycleTime = 0;
-
-  // determine which cycle time to return, based on the code
-  switch(code)
-  {
-    // case P
-    case 'P':
-
-      if( descriptor == "run" )
-      {
-        cycleTime = processorCycleTime;
-      }
-      break;
-
-    // case I
-    case 'I':
-
-      if( descriptor == "hard drive" )
-      {
-        cycleTime = hardDriveCycleTime;
-      }
-      else if( descriptor == "monitor")
-      {
-        cycleTime = monitorDisplayTime;
-      }
-      else if( descriptor == "keyboard")
-      {
-        cycleTime = keyboardCycleTime;
-      }
-      break;
-
-    // case O
-    case 'O':
-
-      if( descriptor == "hard drive" )
-      {
-        cycleTime = hardDriveCycleTime;
-      }
-      else if( descriptor == "monitor")
-      {
-        cycleTime = monitorDisplayTime;
-      }
-      else if( descriptor == "printer" )
-      {
-        cycleTime = printerCycleTime;
-      }
-      break;
-
-    // case M
-    case 'M':
-
-      if( descriptor == "allocate" )
-      {
-        cycleTime = memoryCycleTime;
-      }
-      else if( descriptor == "cache")
-      {
-        cycleTime = memoryCycleTime;
-      }
-      break;
-  }
-
-  return cycleTime;
-}
-
-
-/*
- * Provide a logger for output within this class
- */
-void Simulation::setLogger(Logger *theLogger)
-{
-  logger = theLogger;
 }
 
 
@@ -243,9 +161,10 @@ void Simulation::logSimulationSettings()
 /*
  * Process metadata instructions - big changes coming soon to this function
  */
-void Simulation::processInstructions(Metadata *metadata)
+void Simulation::processInstructions()
 {
   // fields for the metadata
+  Instruction instruction;
   string descriptor;
   string message;
   char code;
@@ -257,8 +176,19 @@ void Simulation::processInstructions(Metadata *metadata)
   logger->log("Meta-Data Metrics");
 
   // log metadata instructions while there are instructions to log
-  while( metadata->fetchNextInstruction(code, descriptor, cycles) )
+  while( !instructionsQueue.empty() )
   {
+
+    // fetch the next instruction
+    instruction = instructionsQueue.front();
+
+    // remove the instruction now that it's been fetched
+    instructionsQueue.pop();
+
+    // update parameters with the values stored in the instruction
+    code = instruction.code;
+    descriptor = instruction.descriptor;
+    cycles = instruction.cycles;
 
     // get the time per cycle for the code-descriptor combination
     timePerCycle = getCycleTime(code, descriptor);
@@ -291,7 +221,76 @@ void Simulation::processInstructions(Metadata *metadata)
 }
 
 
+/*
+ * Get the desired cycle time for a device based on
+ * the code and the descriptor provided
+ */
+int Simulation::getCycleTime(char code, string descriptor)
+{
+  int cycleTime = 0;
 
+  // determine which cycle time to return, based on the code
+  switch(code)
+  {
+    // case P
+    case 'P':
+
+      if( descriptor == "run" )
+      {
+        cycleTime = processorCycleTime;
+      }
+      break;
+
+      // case I
+    case 'I':
+
+      if( descriptor == "hard drive" )
+      {
+        cycleTime = hardDriveCycleTime;
+      }
+      else if( descriptor == "monitor")
+      {
+        cycleTime = monitorDisplayTime;
+      }
+      else if( descriptor == "keyboard")
+      {
+        cycleTime = keyboardCycleTime;
+      }
+      break;
+
+      // case O
+    case 'O':
+
+      if( descriptor == "hard drive" )
+      {
+        cycleTime = hardDriveCycleTime;
+      }
+      else if( descriptor == "monitor")
+      {
+        cycleTime = monitorDisplayTime;
+      }
+      else if( descriptor == "printer" )
+      {
+        cycleTime = printerCycleTime;
+      }
+      break;
+
+      // case M
+    case 'M':
+
+      if( descriptor == "allocate" )
+      {
+        cycleTime = memoryCycleTime;
+      }
+      else if( descriptor == "cache")
+      {
+        cycleTime = memoryCycleTime;
+      }
+      break;
+  }
+
+  return cycleTime;
+}
 
 
 

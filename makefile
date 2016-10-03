@@ -8,17 +8,17 @@ CFLAGS = -Wall -c
 LFLAGS = -Wall
 SOURCE = ../src/
 
-SimO1 : $(SOURCE)main.cpp Logger.o Metadata.o Simulation.o ConfigFileParser.o FileParser.o
-	$(CC) $(LFLAGS) $(SOURCE)main.cpp Logger.o Metadata.o Simulation.o ConfigFileParser.o FileParser.o -o Sim01
+SimO1 : $(SOURCE)main.cpp Logger.o Simulation.o MetaFileParser.o ConfigFileParser.o FileParser.o
+	$(CC) $(LFLAGS) $(SOURCE)main.cpp Logger.o Simulation.o MetaFileParser.o ConfigFileParser.o FileParser.o -o Sim01
 
 Logger.o : Logger.o $(SOURCE)Logger.cpp
 	$(CC) $(CFLAGS) $(SOURCE)Logger.cpp
 
-Metadata.o : Metadata.o $(SOURCE)Metadata.cpp
-	$(CC) $(CFLAGS) $(SOURCE)Metadata.cpp
-
 Simulation.o : Simulation.o $(SOURCE)Simulation.cpp
 	$(CC) $(CFLAGS) $(SOURCE)Simulation.cpp
+
+MetaFileParser.o : MetaFileParser.o $(SOURCE)MetaFileParser.cpp
+	$(CC) $(CFLAGS) $(SOURCE)MetaFileParser.cpp
 
 ConfigFileParser.o : ConfigFileParser.o $(SOURCE)ConfigFileParser.cpp
 	$(CC) $(CFLAGS) $(SOURCE)ConfigFileParser.cpp

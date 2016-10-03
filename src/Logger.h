@@ -17,6 +17,9 @@ class Logger
     bool Initialize(bool logToMonitor, bool logToFile, string filePath, bool clearTheFile);
     void log(string message);
 
+    // for imitating printf("message: %s", theMessage)
+    void log(string message, string token);
+
   private:
     bool writeToFile(const char* message);
 

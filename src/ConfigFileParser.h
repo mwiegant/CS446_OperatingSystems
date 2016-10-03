@@ -1,8 +1,6 @@
 #ifndef OPERATING_SYSTEM_CONFIGFILEPARSER_H
 #define OPERATING_SYSTEM_CONFIGFILEPARSER_H
 
-#include <vector>
-#include <string>
 #include <cstdio>
 
 #include "FileParser.h"
@@ -19,7 +17,7 @@ class ConfigFileParser: public FileParser
 
     // getters
     void getOSVersion(float& osVersion);
-    void getMetaFilePath(string& metaFilePath);
+    void getMetaFilePath(char metaFilePath[]);
     void getSchedulingCode(string& schedulingCode);
     void getProcessorCycleTime(int& cycleTime);
     void getMonitorCycleTime(int& cycleTime);
@@ -37,7 +35,7 @@ class ConfigFileParser: public FileParser
 
     // Configuration Information
     float osVersion;
-    string mdf_filePath;
+    char mdf_filePath[50];
     string cpuSchedulingCode;
 
     // Processing Times

@@ -1,7 +1,8 @@
+#define NULL 0
+
 #include <iostream>
 
 #include "Simulation.h"
-#include "Metadata.h"
 
 using namespace std;
 
@@ -9,9 +10,6 @@ using namespace std;
 int main(int argc, char **argv)
 {
   Simulation *simulation = new Simulation();
-  Metadata *metadata = new Metadata();
-  string metadataFilePath;
-
 
   // check if the user provided a config file path
   if( argc < 2 )
@@ -28,19 +26,12 @@ int main(int argc, char **argv)
     return -2;
   }
 
-  // get the metadata file from the simulation
-  metadataFilePath = simulation->getMetadataFilePath();
-
-  // read in the metadata file
-  if( !metadata->readInMetadata( metadataFilePath ) )
-  {
-    cout << "Error - Failed to read in the metadata file at: " << metadataFilePath << endl;
-    return -2;
-  }
-
   // process metadata instructions
-  simulation->Run(metadata);
+  simulation->Run();
 
+  // de-allocate simulation
+  delete simulation;
+  simulation = NULL;
 
   return 0;
 }

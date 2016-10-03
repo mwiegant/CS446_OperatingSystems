@@ -80,7 +80,7 @@ void ConfigFileParser::processData(string label, string data)
     // process metadata file path
   else if( label == "File")
   {
-    mdf_filePath = data;
+    strcpy( mdf_filePath, data.c_str() );
   }
 
     // process processor cycle time
@@ -167,9 +167,9 @@ void ConfigFileParser::getOSVersion(float& osVersion)
   osVersion = this->osVersion;
 }
 
-void ConfigFileParser::getMetaFilePath(string& metaFilePath)
+void ConfigFileParser::getMetaFilePath(char metaFilePath[])
 {
-  metaFilePath = this->mdf_filePath;
+  strcpy( metaFilePath, this->mdf_filePath );
 }
 
 void ConfigFileParser::getSchedulingCode(string& schedulingCode)

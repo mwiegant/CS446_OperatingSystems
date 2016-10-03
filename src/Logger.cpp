@@ -23,10 +23,8 @@ bool Logger::Initialize(bool logToMonitor, bool logToFile, string filePath, bool
   this->logToMonitor = logToMonitor;
   this->logToFile = logToFile;
 
-
+  // copy the file path
   strcpy( this->filePath, filePath.c_str() );
-
-  printf("filepath: %s\n", this->filePath);
 
   // clear the file by writing to it
   if(clearTheFile)
@@ -42,6 +40,8 @@ bool Logger::Initialize(bool logToMonitor, bool logToFile, string filePath, bool
     {
       printf("Warning - failed to clear the file\n");
     }
+
+    fileOutStream.close();
   }
 
 

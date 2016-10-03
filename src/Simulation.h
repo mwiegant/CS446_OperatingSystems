@@ -1,13 +1,16 @@
 #ifndef OPERATING_SYSTEM_SIMULATION_H
 #define OPERATING_SYSTEM_SIMULATION_H
 
+#define NULL 0
+
 #include <cstdio>
 #include <string>
 #include <fstream>
 #include <vector>
+#include <queue>
 
 #include "ConfigFileParser.h"
-#include "Metadata.h"
+#include "MetaFileParser.h"
 #include "Logger.h"
 
 using namespace std;
@@ -19,23 +22,18 @@ class Simulation
     ~Simulation();
 
     bool Initialize(char filePath[]);
-    bool Run(Metadata *metadata);
-
-    // Getters
-    string getMetadataFilePath();
-    int getCycleTime(char code, string descriptor);
-
-    // Configuration Functions
-    void setLogger(Logger *theLogger);
+    bool Run();
 
   private:
     void logSimulationSettings();
 
-    void processInstructions(Metadata *metadata);
+    // functions for processing instructions
+    void processInstructions();
+    int getCycleTime(char code, string descriptor);
 
     // Configuration Information
     float osVersion;
-    string mdf_filePath;
+    char mdf_filePath[50];
     string cpuSchedulingCode;
 
     // Processing Times
@@ -55,6 +53,9 @@ class Simulation
 
     // Logging Object
     Logger *logger;
+
+    // Queue for holding instructions
+    queue<Instruction> instructionsQueue;
 };
 
 #endif //OPERATING_SYSTEM_SIMULATION_H
