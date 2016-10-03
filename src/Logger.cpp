@@ -15,24 +15,37 @@ Logger::~Logger()
 
 
 /*
- * Enable the logger to write messages to the console
+ * Set up the logger with where to log to. If 'clearTheFile' is set to true, the specified
+ * file will be cleared. If clearing the file fails, a warning will be printed to the screen.
  */
-void Logger::enableMonitorLogging()
+bool Logger::Initialize(bool logToMonitor, bool logToFile, string filePath, bool clearTheFile)
 {
-  logToMonitor = true;
-}
+  this->logToMonitor = logToMonitor;
+  this->logToFile = logToFile;
 
 
-/*
- * Enable the logger to write messages to a file
- */
-void Logger::enableLoggingToFile(string filePath)
-{
-  logToFile = true;
+  strcpy( this->filePath, filePath.c_str() );
 
-  // setup the connection to log to file
-  fileOutStream.clear();
-  fileOutStream.open(filePath.c_str());
+  printf("filepath: %s\n", this->filePath);
+
+  // clear the file by writing to it
+  if(clearTheFile)
+  {
+    fileOutStream.clear();
+    fileOutStream.open( this->filePath );
+
+    if( fileOutStream.good() )
+    {
+      fileOutStream << "";
+    }
+    else
+    {
+      printf("Warning - failed to clear the file\n");
+    }
+  }
+
+
+  return true;
 }
 
 
@@ -44,24 +57,42 @@ void Logger::log(string message)
   // check if neither logging functionality is enabled
   if(!logToMonitor && !logToFile)
   {
-    cout << "err - asked to log when should not log anything to anywhere because no logging mode has been enabled" << endl;
+    printf("Error - asked to log when no logging mode has been enabled\n");
   }
 
-  // check if monitor logging is enabled
   if(logToMonitor)
   {
-    // log the message to the monitor
-    cout << message << endl;
+    printf("%s\n", message.c_str());
   }
 
-  // check if file logging is enabled
   if(logToFile)
   {
     // log the message to the file
-    fileOutStream << message << endl;
+    writeToFile(message.c_str());
   }
 }
 
+
+bool Logger::writeToFile(const char* message)
+{
+  bool successfulWrite = false;
+
+  // clear and open the file in append mode
+  fileOutStream.clear();
+  fileOutStream.open(filePath, fstream::app);
+
+  if( fileOutStream.good() )
+  {
+    successfulWrite = true;
+
+    fileOutStream << message << endl;
+  }
+
+  // close the file stream
+  fileOutStream.close();
+
+  return successfulWrite;
+}
 
 
 

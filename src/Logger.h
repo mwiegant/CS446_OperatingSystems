@@ -1,7 +1,7 @@
 #ifndef OPERATING_SYSTEM_LOGGER_H
 #define OPERATING_SYSTEM_LOGGER_H
 
-#include <iostream>
+#include <cstdio>
 #include <fstream>
 #include <string>
 
@@ -13,13 +13,14 @@ class Logger
     Logger();
     ~Logger();
 
-    void enableMonitorLogging();
-    void enableLoggingToFile(string filename);
+    bool Initialize(bool logToMonitor, bool logToFile, string filePath, bool clearTheFile);
     void log(string message);
 
   private:
+    bool writeToFile(const char* message);
 
     ofstream fileOutStream;
+    char filePath[50];
     bool logToMonitor;
     bool logToFile;
 };

@@ -16,6 +16,7 @@ Simulation::Simulation()
 
   logToMonitor = false;
   logToFile = false;
+  logFileName = "";
   logFilePath = "";
 }
 
@@ -56,8 +57,12 @@ bool Simulation::Initialize(char filePath[])
   configFileParser->getSystemMemory( systemMemory );
   configFileParser->getLoggingInformation( logToMonitor, logToFile, logFileName, logFilePath);
 
-  // turn the logger on
-  turnLoggerOn();
+  // initialize the logger
+  if( !logger->Initialize(logToMonitor, logToFile, logFilePath, true) )
+  {
+    printf("Error - failed to initialize the logger.\n");
+    return false;
+  }
 
   // log the configuration of the simulation
   logSimulationSettings();
@@ -65,7 +70,6 @@ bool Simulation::Initialize(char filePath[])
 
   // clean up file parsing objects
   delete configFileParser;
-
 
   return true;
 }
@@ -161,28 +165,6 @@ void Simulation::setLogger(Logger *theLogger)
   logger = theLogger;
 }
 
-
-/*
- * Enables logging on the logger
- */
-void Simulation::turnLoggerOn()
-{
-  string filepath;
-
-  // check if monitor logging should be enabled
-  if(logToMonitor)
-  {
-    logger->enableMonitorLogging();
-  }
-
-  // check if file logging should be enabled
-  if(logToFile)
-  {
-    filepath = logFilePath + "/" + logFileName;
-
-    logger->enableLoggingToFile( filepath );
-  }
-}
 
 /*
  * Output all settings from the simulation to the console

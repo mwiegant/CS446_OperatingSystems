@@ -150,7 +150,7 @@ void ConfigFileParser::processData(string label, string data)
     // extract the filename from the filepath
     splitString(data, '/', logfilePathTokens);
 
-    logFilePath = logfilePathTokens[0];
+    logFilePath = data;
     logFileName = logfilePathTokens[1];
   }
 

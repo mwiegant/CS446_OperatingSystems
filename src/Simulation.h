@@ -27,8 +27,6 @@ class Simulation
     void setLogger(Logger *theLogger);
 
   private:
-    // Logger Interaction Functions
-    void turnLoggerOn();
     void logSimulationSettings();
 
     // Configuration Information
