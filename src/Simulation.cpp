@@ -18,6 +18,8 @@ Simulation::Simulation()
   logToFile = false;
   logFileName = "";
   logFilePath = "";
+
+  logger = new Logger();
 }
 
 Simulation::~Simulation()
@@ -70,6 +72,20 @@ bool Simulation::Initialize(char filePath[])
 
   // clean up file parsing objects
   delete configFileParser;
+
+  return true;
+}
+
+
+/*
+ * Placeholder function while I make my design transitions.
+ *
+ * This function will kick off my entire simulation.
+ */
+bool Simulation::Run(Metadata *metadata)
+{
+
+  processInstructions(metadata);
 
   return true;
 }
@@ -222,4 +238,62 @@ void Simulation::logSimulationSettings()
   // log an empty line
   logger->log("");
 }
+
+
+/*
+ * Process metadata instructions - big changes coming soon to this function
+ */
+void Simulation::processInstructions(Metadata *metadata)
+{
+  // fields for the metadata
+  string descriptor;
+  string message;
+  char code;
+  int cycles;
+  int timePerCycle;
+  int totalTime;
+
+  // log metadata metrics
+  logger->log("Meta-Data Metrics");
+
+  // log metadata instructions while there are instructions to log
+  while( metadata->fetchNextInstruction(code, descriptor, cycles) )
+  {
+
+    // get the time per cycle for the code-descriptor combination
+    timePerCycle = getCycleTime(code, descriptor);
+
+    // compute the total time to process the instruction
+    totalTime = cycles * timePerCycle;
+
+    // check if total time is greater than 0
+    if( totalTime > 0 )
+    {
+      // set the message to be empty
+      message = "";
+
+      // build the first part of the message
+      message += code;
+      message += "(" + descriptor + ")" + to_string(cycles);
+
+      // build the second part of the message
+      message += " - ";
+
+      // build the third part of the message
+      message += to_string(totalTime) + " ms";
+
+      // log the message
+      logger->log(message);
+    }
+
+  }
+
+}
+
+
+
+
+
+
+
 

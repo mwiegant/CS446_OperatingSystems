@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ConfigFileParser.h"
+#include "Metadata.h"
 #include "Logger.h"
 
 using namespace std;
@@ -18,6 +19,7 @@ class Simulation
     ~Simulation();
 
     bool Initialize(char filePath[]);
+    bool Run(Metadata *metadata);
 
     // Getters
     string getMetadataFilePath();
@@ -28,6 +30,8 @@ class Simulation
 
   private:
     void logSimulationSettings();
+
+    void processInstructions(Metadata *metadata);
 
     // Configuration Information
     float osVersion;
