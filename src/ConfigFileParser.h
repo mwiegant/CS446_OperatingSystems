@@ -1,6 +1,8 @@
 #ifndef OPERATING_SYSTEM_CONFIGFILEPARSER_H
 #define OPERATING_SYSTEM_CONFIGFILEPARSER_H
 
+// todo - fix known bug - program doesn't log correctly when told to only log to file
+
 #include <cstdio>
 
 #include "FileParser.h"

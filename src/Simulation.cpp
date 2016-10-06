@@ -5,12 +5,12 @@ Simulation::Simulation()
   osVersion = 0.0f;
   cpuSchedulingCode = "";
 
-  processorCycleTime = 0;
-  monitorDisplayTime = 0;
-  hardDriveCycleTime = 0;
-  printerCycleTime = 0;
-  keyboardCycleTime = 0;
-  memoryCycleTime = 0;
+  cycleTimes.processorCycleTime = 0;
+  cycleTimes.monitorDisplayTime = 0;
+  cycleTimes.hardDriveCycleTime = 0;
+  cycleTimes.printerCycleTime = 0;
+  cycleTimes.keyboardCycleTime = 0;
+  cycleTimes.memoryCycleTime = 0;
   systemMemory = 0;
 
   logToMonitor = false;
@@ -49,12 +49,12 @@ bool Simulation::Initialize(char filePath[])
   configFileParser->getOSVersion( osVersion );
   configFileParser->getMetaFilePath( mdf_filePath );
   configFileParser->getSchedulingCode( cpuSchedulingCode );
-  configFileParser->getProcessorCycleTime( processorCycleTime );
-  configFileParser->getMonitorCycleTime( monitorDisplayTime );
-  configFileParser->getHardDriveCycleTime( hardDriveCycleTime );
-  configFileParser->getPrinterCycleTime( printerCycleTime );
-  configFileParser->getKeyboardCycleTime( keyboardCycleTime );
-  configFileParser->getMemoryCycleTime( memoryCycleTime );
+  configFileParser->getProcessorCycleTime( cycleTimes.processorCycleTime );
+  configFileParser->getMonitorCycleTime( cycleTimes.monitorDisplayTime );
+  configFileParser->getHardDriveCycleTime( cycleTimes.hardDriveCycleTime );
+  configFileParser->getPrinterCycleTime( cycleTimes.printerCycleTime );
+  configFileParser->getKeyboardCycleTime( cycleTimes.keyboardCycleTime );
+  configFileParser->getMemoryCycleTime( cycleTimes.memoryCycleTime );
   configFileParser->getSystemMemory( systemMemory );
   configFileParser->getLoggingInformation( logToMonitor, logToFile, logFileName, logFilePath);
 
@@ -94,7 +94,9 @@ bool Simulation::Initialize(char filePath[])
 bool Simulation::Run()
 {
 
-  processInstructions();
+  createProcesses();
+
+//  processInstructions();
 
   return true;
 }
@@ -111,27 +113,27 @@ void Simulation::logSimulationSettings()
   logger->log("Configuration File Data");
 
   // log processor settings
-  message = "Processor = " + to_string(processorCycleTime) + " ms/cycle";
+  message = "Processor = " + to_string(cycleTimes.processorCycleTime) + " ms/cycle";
   logger->log(message);
 
   // log monitor settings
-  message = "Monitor = " + to_string(monitorDisplayTime) + " ms/cycle";
+  message = "Monitor = " + to_string(cycleTimes.monitorDisplayTime) + " ms/cycle";
   logger->log(message);
 
   // log hard drive settings
-  message = "Hard Drive = " + to_string(hardDriveCycleTime) + " ms/cycle";
+  message = "Hard Drive = " + to_string(cycleTimes.hardDriveCycleTime) + " ms/cycle";
   logger->log(message);
 
   // log printer settings
-  message = "Printer = " + to_string(printerCycleTime) + " ms/cycle";
+  message = "Printer = " + to_string(cycleTimes.printerCycleTime) + " ms/cycle";
   logger->log(message);
 
   // log keyboard settings
-  message = "Keyboard = " + to_string(keyboardCycleTime) + " ms/cycle";
+  message = "Keyboard = " + to_string(cycleTimes.keyboardCycleTime) + " ms/cycle";
   logger->log(message);
 
   // log memory settings
-  message = "Memory = " + to_string(memoryCycleTime) + " ms/cycle";
+  message = "Memory = " + to_string(cycleTimes.memoryCycleTime) + " ms/cycle";
   logger->log(message);
 
   // setup the message to log the settings on where the simulation is logging
@@ -158,9 +160,65 @@ void Simulation::logSimulationSettings()
 }
 
 
+
+void Simulation::createProcesses()
+{
+  queue<Instruction> processQueue;
+  Instruction instruction;
+  Process* process;
+
+  while( !instructionsQueue.empty() )
+  {
+    // remove item from the queue
+    instruction = instructionsQueue.front();
+    instructionsQueue.pop();
+
+    // add item to the new process's queue
+    processQueue.push(instruction);
+
+    // enqueue instructions into the new process queue until A(end)0 is encountered
+    if( instruction.code == 'A' && instruction.descriptor == "end" )
+    {
+
+      // if the instructions queue only has 1 item left (ie, S(end)0 ), just enqueue it here
+      if( instructionsQueue.size() == 1 )
+      {
+        instruction = instructionsQueue.front();
+        instructionsQueue.pop();
+        processQueue.push(instruction);
+      }
+
+      // create a new process
+      process = new Process(cycleTimes, logger, processQueue);
+
+      processes.push_back( *process );
+
+      // empty the process queue, for the next process
+      while( !processQueue.empty() )
+      {
+        processQueue.pop();
+      }
+
+    }
+
+  }
+
+}
+
 /*
- * Process metadata instructions - big changes coming soon to this function
+ * 2. dequeue from the instructions queue until I reach the 'stop' instruction
+ * 3. make a new process in the processes vector, send it the queue and other stuff
+ * 4. empty out that queue
+ * 5. go to step 2 again, loop until the queue is empty
+ * 6. do step 3 again
  */
+
+
+
+
+
+
+/*
 void Simulation::processInstructions()
 {
   // fields for the metadata
@@ -191,7 +249,7 @@ void Simulation::processInstructions()
     cycles = instruction.cycles;
 
     // get the time per cycle for the code-descriptor combination
-    timePerCycle = getCycleTime(code, descriptor);
+//    timePerCycle = getCycleTime(code, descriptor);
 
     // compute the total time to process the instruction
     totalTime = cycles * timePerCycle;
@@ -219,78 +277,9 @@ void Simulation::processInstructions()
   }
 
 }
+*/
 
 
-/*
- * Get the desired cycle time for a device based on
- * the code and the descriptor provided
- */
-int Simulation::getCycleTime(char code, string descriptor)
-{
-  int cycleTime = 0;
-
-  // determine which cycle time to return, based on the code
-  switch(code)
-  {
-    // case P
-    case 'P':
-
-      if( descriptor == "run" )
-      {
-        cycleTime = processorCycleTime;
-      }
-      break;
-
-      // case I
-    case 'I':
-
-      if( descriptor == "hard drive" )
-      {
-        cycleTime = hardDriveCycleTime;
-      }
-      else if( descriptor == "monitor")
-      {
-        cycleTime = monitorDisplayTime;
-      }
-      else if( descriptor == "keyboard")
-      {
-        cycleTime = keyboardCycleTime;
-      }
-      break;
-
-      // case O
-    case 'O':
-
-      if( descriptor == "hard drive" )
-      {
-        cycleTime = hardDriveCycleTime;
-      }
-      else if( descriptor == "monitor")
-      {
-        cycleTime = monitorDisplayTime;
-      }
-      else if( descriptor == "printer" )
-      {
-        cycleTime = printerCycleTime;
-      }
-      break;
-
-      // case M
-    case 'M':
-
-      if( descriptor == "allocate" )
-      {
-        cycleTime = memoryCycleTime;
-      }
-      else if( descriptor == "cache")
-      {
-        cycleTime = memoryCycleTime;
-      }
-      break;
-  }
-
-  return cycleTime;
-}
 
 
 
