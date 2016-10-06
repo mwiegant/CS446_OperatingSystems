@@ -8,7 +8,8 @@ CC = g++
 DEBUG = -g
 CFLAGS = -Wall -c -std=c++11 -lpthread
 LFLAGS = -Wall -std=c++11 -lpthread
-SOURCE = ../src/
+# SOURCE = ../src/
+SOURCE = src/
 
 sim02 : $(SOURCE)main.cpp Logger.o Simulation.o Process.o MetaFileParser.o ConfigFileParser.o FileParser.o
 	$(CC) $(LFLAGS) $(SOURCE)main.cpp Logger.o Simulation.o Process.o MetaFileParser.o ConfigFileParser.o FileParser.o -o simO2
