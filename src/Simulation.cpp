@@ -87,23 +87,31 @@ bool Simulation::Initialize(char filePath[])
 
 
 /*
- * Placeholder function while I make my design transitions.
- *
- * This function will kick off my entire simulation.
+ * Kicks off the entire simulation, including:
+ *  - creating processes from the set of meta instructions
+ *  - running each process until their completion (or interruption)
  */
 bool Simulation::Run()
 {
 
   createProcesses();
 
-//  processInstructions();
+  // run through each process
+  while( processes.size() > 0 )
+  {
+    // run the first process
+    processes[0].Run();
+
+    // remove the first process after it finishes running
+    processes.erase( processes.begin() );
+  }
 
   return true;
 }
 
 
 /*
- * Output all settings from the simulation to the console
+ * Output all settings from the simulation to the console.
  */
 void Simulation::logSimulationSettings()
 {
@@ -204,15 +212,6 @@ void Simulation::createProcesses()
   }
 
 }
-
-/*
- * 2. dequeue from the instructions queue until I reach the 'stop' instruction
- * 3. make a new process in the processes vector, send it the queue and other stuff
- * 4. empty out that queue
- * 5. go to step 2 again, loop until the queue is empty
- * 6. do step 3 again
- */
-
 
 
 

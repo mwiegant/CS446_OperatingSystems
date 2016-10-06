@@ -11,6 +11,7 @@ struct Instruction
   int cycles;
 };
 
+// structure for holding simulation cycle times
 struct SimCycleTimes
 {
   int processorCycleTime;
@@ -21,7 +22,17 @@ struct SimCycleTimes
   int memoryCycleTime;
 };
 
-// todo - add structure(s) for Simulation properties
+// enumeration for a Process Control Block
+enum ProcessControlBlock
+{
+  NEW,
+  READY,
+  RUNNING,
+  WAITING,
+  TERMINATED
+};
+
+
 
 
 #endif //OPERATING_SYSTEM_STRUCTURES_H

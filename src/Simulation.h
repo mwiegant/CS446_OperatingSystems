@@ -1,8 +1,6 @@
 #ifndef OPERATING_SYSTEM_SIMULATION_H
 #define OPERATING_SYSTEM_SIMULATION_H
 
-#define NULL nullptr
-
 #include <cstdio>
 #include <string>
 #include <fstream>
