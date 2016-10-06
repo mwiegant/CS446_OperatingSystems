@@ -1,13 +1,15 @@
 #ifndef OPERATING_SYSTEM_SIMULATION_H
 #define OPERATING_SYSTEM_SIMULATION_H
 
-#define NULL 0
+#define NULL nullptr
 
 #include <cstdio>
 #include <string>
 #include <fstream>
 #include <vector>
 #include <queue>
+
+#include "Structures.h"
 
 #include "ConfigFileParser.h"
 #include "MetaFileParser.h"

@@ -4,18 +4,11 @@
 #include <queue>
 #include <cstdio>
 
+#include "Structures.h"
+
 #include "FileParser.h"
 
 using namespace std;
-
-
-// struct for holding metadata instructions
-struct Instruction
-{
-    char code;
-    string descriptor;
-    int cycles;
-};
 
 
 class MetaFileParser : public FileParser
