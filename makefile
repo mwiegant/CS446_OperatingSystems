@@ -2,6 +2,8 @@
 # 9 - 10 - 16
 # Make Peace, not Bugs
 
+# todo - link this file into my build directory so I don't have to move it back and forth on commits
+
 CC = g++
 DEBUG = -g
 CFLAGS = -Wall -c -std=c++11
