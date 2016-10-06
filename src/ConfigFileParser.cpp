@@ -88,8 +88,6 @@ void ConfigFileParser::processData(string label, string data)
 {
   vector<string> logfilePathTokens;
 
-  printf("Label: %s\n", label.c_str());
-
   // process version
   if( label == "Version/Phase:")
   {
