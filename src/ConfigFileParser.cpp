@@ -4,6 +4,23 @@
 ConfigFileParser::ConfigFileParser()
 {
 
+  /* Set default values for the Config properties */
+
+  osVersion = 0.0f;
+  cpuSchedulingCode = "";
+
+  processorCycleTime = 0;
+  monitorDisplayTime = 0;
+  hardDriveCycleTime = 0;
+  printerCycleTime = 0;
+  keyboardCycleTime = 0;
+  memoryCycleTime = 0;
+  systemMemory = 0;
+
+  logToMonitor = false;
+  logToFile = false;
+  logFileName = "";
+  logFilePath = "";
 }
 
 
@@ -71,61 +88,63 @@ void ConfigFileParser::processData(string label, string data)
 {
   vector<string> logfilePathTokens;
 
+  printf("Label: %s\n", label.c_str());
+
   // process version
   if( label == "Version/Phase:")
   {
     osVersion = stof(data);
   }
 
-    // process metadata file path
+  // process metadata file path
   else if( label == "File")
   {
     strcpy( mdf_filePath, data.c_str() );
   }
 
-    // process processor cycle time
+  // process processor cycle time
   else if( label == "Processor")
   {
     processorCycleTime = stoi(data);
   }
 
-    // process monitor display time
+  // process monitor display time
   else if( label == "Monitor")
   {
     monitorDisplayTime = stoi(data);
   }
 
-    // process hard drive cycle time
+  // process hard drive cycle time
   else if( label == "Hard")
   {
     hardDriveCycleTime = stoi(data);
   }
 
-    // process printer cycle time
+  // process printer cycle time
   else if( label == "Printer")
   {
     printerCycleTime = stoi(data);
   }
 
-    // process keyboard cycle time
+  // process keyboard cycle time
   else if( label == "Keyboard")
   {
     keyboardCycleTime = stoi(data);
   }
 
-    // process memory cycle time
+  // process memory cycle time
   else if( label == "Memory")
   {
     memoryCycleTime = stoi(data);
   }
 
-    // process system memory
+  // process system memory
   else if( label == "System")
   {
     systemMemory = stoi(data);
   }
 
-    // process where to log
+  // process where to log
   else if( label == "Log:")
   {
     // determine where to log, based on the value of data
@@ -142,9 +161,10 @@ void ConfigFileParser::processData(string label, string data)
     {
       logToMonitor = true;
     }
+
   }
 
-    // process log file path
+  // process log file path
   else if( label == "Log")
   {
     // extract the filename from the filepath
