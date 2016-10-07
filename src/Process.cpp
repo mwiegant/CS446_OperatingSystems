@@ -1,15 +1,91 @@
 #include "Process.h"
 
-Process::Process(SimCycleTimes cycleTimes, Logger* logger, queue<Instruction> instructionsQueue )
+/*
+ * ===============================================================================
+ * ========================>  HELPER FUNCTIONS  <========================
+ * ===============================================================================
+ */
+
+/*
+ * Returns how much time has passed since the reference time.
+ */
+int timePassed( struct timeval refTime )
 {
-  this->cycleTimes = cycleTimes;
+  timeval currentTime;
+  int microsec, seconds;
+
+  gettimeofday( &currentTime, NULL );
+  seconds = currentTime.tv_sec - refTime.tv_sec;
+  microsec = currentTime.tv_usec - refTime.tv_usec;
+
+  if( microsec < 0 )
+  {
+    microsec += 1000000;
+    seconds -= 1;
+  }
+
+  if( seconds > 0 )
+  {
+    microsec = microsec + ( seconds * 1000000 );
+  }
+
+  return microsec;
+}
+
+
+/*
+ * Simulates memory allocation by returning a random number.
+ */
+unsigned int allocateMemory( int totalMemory )
+{
+  unsigned int address = 0;
+
+  srand(time(NULL));
+
+  if( totalMemory > 0 )
+  {
+    address = rand() % totalMemory;
+  }
+  return address;
+}
+
+
+/*
+ * Meant to be used by threads.
+ *
+ * Takes in a wait time, and doesn't exit from the thread
+ * until the wait time has expired.
+ */
+void* threadRunner(void* _waitTime)
+{
+  int* waitTime = (int*) _waitTime;
+
+  struct timeval referenceTime;
+
+  gettimeofday( &referenceTime, NULL );
+
+  while( timePassed(referenceTime) < *waitTime );
+
+  pthread_exit(0);
+}
+
+
+/*
+ * ===============================================================================
+ * ========================>  CLASS IMPLEMENTATION  <========================
+ * ===============================================================================
+ */
+
+Process::Process(SimulatorSettings simulatorSettings, Logger* logger, queue<Instruction> instructionsQueue )
+{
+  this->simulatorSettings = simulatorSettings;
   this->logger = logger;
   this->instructionsQueue = instructionsQueue;
 
-  // set default state to new
-  processState = NEW;
+  // set default state to ready
+  processState = READY;
 
-  logger->log("successfully created a new process!!!");
+  this->logger->log("successfully created a new process!!!");
 }
 
 
@@ -24,23 +100,50 @@ Process::~Process()
  */
 void Process::Run()
 {
-  // todo
-}
+  char code;
+  string descriptor;
+  Instruction instruction;
+  int cycles, timePerCycle, runTime;
+  bool stillRunning = false;
+  unsigned int memory = 0;
 
 
 
-/*
- * Meant to be used by threads.
- *
- * Takes in a wait time, and doesn't exit from the thread
- * until the wait time has expired.
- */
-void* Process::threadRunner(void* waitTime)
-{
+  // change state to running
+  processState = RUNNING;
 
   // todo
 
-  pthread_exit(0);
+  while( !instructionsQueue.empty() )
+  {
+
+    // get the next instruction
+    instruction = instructionsQueue.front();
+    instructionsQueue.pop();
+
+    // update parameters with the values stored in the instruction
+    code = instruction.code;
+    descriptor = instruction.descriptor;
+    cycles = instruction.cycles;
+
+    // get the time per cycle for the code-descriptor combination
+    timePerCycle = getCycleTime(code, descriptor);
+
+    // compute the total time to process the instruction
+    runTime = cycles * timePerCycle * 1000;
+
+    // log a message about this instruction
+    logInstructionMessage(code, descriptor, stillRunning, memory);
+
+    // process the instruction elsewhere
+    memory = processsInstruction(code, descriptor, runTime);
+
+    // log a final message about this instruction
+    stillRunning = false;
+    logInstructionMessage(code, descriptor, stillRunning, memory);
+
+  }
+
 }
 
 
@@ -60,7 +163,7 @@ int Process::getCycleTime(char code, string descriptor)
 
       if( descriptor == "run" )
       {
-        cycleTime = cycleTimes.processorCycleTime;
+        cycleTime = simulatorSettings.processorCycleTime;
       }
       break;
 
@@ -69,15 +172,15 @@ int Process::getCycleTime(char code, string descriptor)
 
       if( descriptor == "hard drive" )
       {
-        cycleTime = cycleTimes.hardDriveCycleTime;
+        cycleTime = simulatorSettings.hardDriveCycleTime;
       }
       else if( descriptor == "monitor")
       {
-        cycleTime = cycleTimes.monitorDisplayTime;
+        cycleTime = simulatorSettings.monitorDisplayTime;
       }
       else if( descriptor == "keyboard")
       {
-        cycleTime = cycleTimes.keyboardCycleTime;
+        cycleTime = simulatorSettings.keyboardCycleTime;
       }
       break;
 
@@ -86,15 +189,15 @@ int Process::getCycleTime(char code, string descriptor)
 
       if( descriptor == "hard drive" )
       {
-        cycleTime = cycleTimes.hardDriveCycleTime;
+        cycleTime = simulatorSettings.hardDriveCycleTime;
       }
       else if( descriptor == "monitor")
       {
-        cycleTime = cycleTimes.monitorDisplayTime;
+        cycleTime = simulatorSettings.monitorDisplayTime;
       }
       else if( descriptor == "printer" )
       {
-        cycleTime = cycleTimes.printerCycleTime;
+        cycleTime = simulatorSettings.printerCycleTime;
       }
       break;
 
@@ -103,14 +206,91 @@ int Process::getCycleTime(char code, string descriptor)
 
       if( descriptor == "allocate" )
       {
-        cycleTime = cycleTimes.memoryCycleTime;
+        cycleTime = simulatorSettings.memoryCycleTime;
       }
       else if( descriptor == "cache")
       {
-        cycleTime = cycleTimes.memoryCycleTime;
+        cycleTime = simulatorSettings.memoryCycleTime;
       }
       break;
   }
 
   return cycleTime;
 }
+
+
+/*
+ * todo
+ */
+void Process::logInstructionMessage(char code, string descriptor, bool stillRunning, unsigned int memory)
+{
+  logger->log("generic logging message");
+
+  // todo
+}
+
+
+/*
+ * Processes each instruction, which may include any of the following:
+ *  - allocating memory, then waiting for a set time
+ *  - creating a thread, which will wait for a set time
+ *  - doing nothing, and then waiting for a set time
+ */
+unsigned int Process::processsInstruction(char code, string descriptor, int runTime)
+{
+  unsigned int memory = 0;
+  timeval referenceTime;
+
+  // todo - remove
+  string time = "runTime: " + to_string(runTime) + "\n";
+  printf(time.c_str());
+
+
+  // get the time and store as a reference time
+  gettimeofday( &referenceTime, NULL );
+
+  // check if the code is 'M' and the descriptor 'allocate'
+  if( code == 'M' && descriptor == "allocate")
+  {
+    // allocate memory
+    memory = allocateMemory( simulatorSettings.systemMemory );
+  }
+
+  // if the code is I or O, spawn a thread to do the waiting operation
+  if( code == 'I' || code == 'O')
+  {
+
+    logger->log("spawning a thread....");
+
+    // spawn a thread
+    pthread_create( &thread, NULL, threadRunner, (void*) &runTime );
+
+    // wait for the thread to come back
+    pthread_join(thread, NULL);
+
+    logger->log("thread has been rejoined...");
+  }
+
+  // else, do the waiting operation here
+  else
+  {
+    while( timePassed(referenceTime) < runTime );
+  }
+
+  // return
+  return memory;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

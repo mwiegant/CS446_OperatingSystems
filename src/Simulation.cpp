@@ -11,7 +11,7 @@ Simulation::Simulation()
   cycleTimes.printerCycleTime = 0;
   cycleTimes.keyboardCycleTime = 0;
   cycleTimes.memoryCycleTime = 0;
-  systemMemory = 0;
+  cycleTimes.systemMemory = 0;
 
   logToMonitor = false;
   logToFile = false;
@@ -55,7 +55,7 @@ bool Simulation::Initialize(char filePath[])
   configFileParser->getPrinterCycleTime( cycleTimes.printerCycleTime );
   configFileParser->getKeyboardCycleTime( cycleTimes.keyboardCycleTime );
   configFileParser->getMemoryCycleTime( cycleTimes.memoryCycleTime );
-  configFileParser->getSystemMemory( systemMemory );
+  configFileParser->getSystemMemory( cycleTimes.systemMemory );
   configFileParser->getLoggingInformation( logToMonitor, logToFile, logFileName, logFilePath);
 
   // initialize the logger
@@ -94,7 +94,10 @@ bool Simulation::Initialize(char filePath[])
 bool Simulation::Run()
 {
 
+  // divide the master queue of instructions into smaller queues inside processes
   createProcesses();
+
+  logger->log("Meta-Data Metrics");
 
   // run through each process
   while( processes.size() > 0 )
@@ -214,69 +217,6 @@ void Simulation::createProcesses()
 }
 
 
-
-
-
-/*
-void Simulation::processInstructions()
-{
-  // fields for the metadata
-  Instruction instruction;
-  string descriptor;
-  string message;
-  char code;
-  int cycles;
-  int timePerCycle;
-  int totalTime;
-
-  // log metadata metrics
-  logger->log("Meta-Data Metrics");
-
-  // log metadata instructions while there are instructions to log
-  while( !instructionsQueue.empty() )
-  {
-
-    // fetch the next instruction
-    instruction = instructionsQueue.front();
-
-    // remove the instruction now that it's been fetched
-    instructionsQueue.pop();
-
-    // update parameters with the values stored in the instruction
-    code = instruction.code;
-    descriptor = instruction.descriptor;
-    cycles = instruction.cycles;
-
-    // get the time per cycle for the code-descriptor combination
-//    timePerCycle = getCycleTime(code, descriptor);
-
-    // compute the total time to process the instruction
-    totalTime = cycles * timePerCycle;
-
-    // check if total time is greater than 0
-    if( totalTime > 0 )
-    {
-      // set the message to be empty
-      message = "";
-
-      // build the first part of the message
-      message += code;
-      message += "(" + descriptor + ")" + to_string(cycles);
-
-      // build the second part of the message
-      message += " - ";
-
-      // build the third part of the message
-      message += to_string(totalTime) + " ms";
-
-      // log the message
-      logger->log(message);
-    }
-
-  }
-
-}
-*/
 
 
 

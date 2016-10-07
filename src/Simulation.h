@@ -31,18 +31,13 @@ class Simulation
     // splits instructions among processes
     void createProcesses();
 
-    // todo - deprecate this function - move into Process
-//    void processInstructions();
-
-
     // Configuration Information
     float osVersion;
-    int systemMemory;
     char mdf_filePath[50];
     string cpuSchedulingCode;
 
     // Processing Times
-    SimCycleTimes cycleTimes;
+    SimulatorSettings cycleTimes;
 
     // Log File
     bool logToMonitor;

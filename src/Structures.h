@@ -12,8 +12,10 @@ struct Instruction
 };
 
 // structure for holding simulation cycle times
-struct SimCycleTimes
+struct SimulatorSettings
 {
+  int systemMemory;
+
   int processorCycleTime;
   int monitorDisplayTime;
   int hardDriveCycleTime;

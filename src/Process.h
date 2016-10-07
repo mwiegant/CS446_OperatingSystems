@@ -1,36 +1,66 @@
 #ifndef OPERATING_SYSTEM_PROCESS_H
 #define OPERATING_SYSTEM_PROCESS_H
 
+#include <cstdlib>
+#include <time.h>
+#include <sys/time.h>
 #include <queue>
 #include <string>
 #include <pthread.h>
 
+// todo - remove when done testing
+#include <cstdio>
 
 #include "Structures.h"
 #include "Logger.h"
 
 using namespace std;
 
+/*
+ * ===============================================================================
+ * ========================>  HELPER FUNCTIONS  <========================
+ * ===============================================================================
+ */
+
+// for use in waiting for a set time
+int timePassed( struct timeval referenceTime );
+
+// used for memory allocation instructions
+unsigned int allocateMemory( int totalMemory );
+
+// the function that threads will run
+void* threadRunner(void* _waitTime);
+
+/*
+ * ===============================================================================
+ * ========================>  CLASS DECLARATION  <========================
+ * ===============================================================================
+ */
+
 class Process
 {
   public:
-    Process(SimCycleTimes cycleTimes, Logger* logger, queue<Instruction> instructionsQueue );
+    Process(SimulatorSettings simulatorSettings, Logger* logger, queue<Instruction> instructionsQueue );
     ~Process();
 
     void Run();
 
   private:
 
-    // the function that threads will run
-    void* threadRunner(void* waitTime);
-
     int getCycleTime(char code, string descriptor);
+
+    void logInstructionMessage(char code, string descriptor, bool stillRunning, unsigned int memory);
+
+    unsigned int processsInstruction(char code, string descriptor, int runTime);
+
+    // thread object
+    pthread_t thread;
 
     // the state of this process
     ProcessControlBlock processState;
 
     // Processing Times
-    SimCycleTimes cycleTimes;
+    SimulatorSettings simulatorSettings;
 
     // Logging Object
     Logger *logger;
