@@ -34,7 +34,7 @@ bool Logger::Initialize(bool logToMonitor, bool logToFile, string filePath, bool
 
 //    if( fileOutStream.good() )
 //    {
-      fileOutStream << "";
+      fileOutStream << "asdf";
 //    }
 //    else
 //    {
