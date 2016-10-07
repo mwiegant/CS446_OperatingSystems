@@ -58,8 +58,6 @@ bool Simulation::Initialize(char filePath[])
   configFileParser->getSystemMemory( cycleTimes.systemMemory );
   configFileParser->getLoggingInformation( logToMonitor, logToFile, logFileName, logFilePath);
 
-  printf(logFilePath.c_str());
-
   // initialize the logger
   if( !logger->Initialize(logToMonitor, logToFile, logFilePath, true) )
   {
