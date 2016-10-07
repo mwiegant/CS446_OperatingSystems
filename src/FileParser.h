@@ -1,6 +1,14 @@
 #ifndef OPERATING_SYSTEM_FILEPARSER_H
 #define OPERATING_SYSTEM_FILEPARSER_H
 
+/*
+ * CLASS - FileParser
+ *
+ * ABOUT - Parent class for File Parsing objects. Contains
+ *  helper functions that represent shared functionality
+ *  between the file parsers.
+ */
+
 #include <fstream>
 #include <vector>
 #include <string>

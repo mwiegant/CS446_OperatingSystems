@@ -1,6 +1,16 @@
 #ifndef OPERATING_SYSTEM_METADATAPARSER_H
 #define OPERATING_SYSTEM_METADATAPARSER_H
 
+/*
+ * CLASS - MetaFIleParser
+ *
+ * ABOUT - Dedicated class for reading in and parsing from
+ *  the metadata file. Reads in all the information from
+ *  the file and loads it into a queue. The queued up
+ *  information is accessible via a reference queue passed
+ *  in to the read-in function.
+ */
+
 #include <queue>
 #include <cstdio>
 

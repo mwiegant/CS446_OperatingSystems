@@ -1,6 +1,14 @@
 #ifndef OPERATING_SYSTEM_CONFIGFILEPARSER_H
 #define OPERATING_SYSTEM_CONFIGFILEPARSER_H
 
+/*
+ * CLASS - ConfigFIleParser
+ *
+ * ABOUT - Dedicated class for reading in and parsing from
+ *  the configuration file. Reads in all the information from
+ *  the file and makes it accessible via getter functions.
+ */
+
 // todo - fix known bug - program doesn't log correctly when told to only log to file
 
 #include <cstdio>

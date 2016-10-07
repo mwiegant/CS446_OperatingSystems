@@ -1,6 +1,15 @@
 #ifndef OPERATING_SYSTEM_PROCESS_H
 #define OPERATING_SYSTEM_PROCESS_H
 
+/*
+ * CLASS - Process
+ *
+ * ABOUT - Class for running processes. Each process represents a
+ *  subset of the entire queue of metadata instructions. The process
+ *  performs all operations needed to process meta instructions
+ *  including threading, memory allocation, and pausing for time.
+ */
+
 #include <cstdlib>
 #include <time.h>
 #include <sys/time.h>
@@ -8,9 +17,6 @@
 #include <cstring>
 #include <string>
 #include <pthread.h>
-
-// todo - remove when done testing
-#include <cstdio>
 
 #include "Structures.h"
 #include "Logger.h"

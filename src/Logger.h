@@ -1,6 +1,14 @@
 #ifndef OPERATING_SYSTEM_LOGGER_H
 #define OPERATING_SYSTEM_LOGGER_H
 
+/*
+ * CLASS - Logger
+ *
+ * ABOUT - Dedicated logging class. Handles logging to a file
+ *  and monitor, as specified. For file logging, appends messages
+ *  to the file as they are received by the logger.
+ */
+
 #include <cstdio>
 #include <fstream>
 #include <cstring>
