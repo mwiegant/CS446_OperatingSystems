@@ -58,6 +58,8 @@ bool Simulation::Initialize(char filePath[])
   configFileParser->getSystemMemory( cycleTimes.systemMemory );
   configFileParser->getLoggingInformation( logToMonitor, logToFile, logFileName, logFilePath);
 
+  printf(logFilePath.c_str());
+
   // initialize the logger
   if( !logger->Initialize(logToMonitor, logToFile, logFilePath, true) )
   {
@@ -133,7 +135,8 @@ void Simulation::logSimulationSettings()
   logger->log("Configuration File Data");
 
   // log system memory
-  message = "System memory = " +to_string(cycleTimes.systemMemory) + " (kbytes)";
+  message = "System memory = " + to_string(cycleTimes.systemMemory) + " (kbytes)";
+  logger->log(message);
 
   // log processor settings
   message = "Processor = " + to_string(cycleTimes.processorCycleTime) + " ms/cycle";

@@ -6,8 +6,8 @@
 
 CC = g++
 DEBUG = -g
-CFLAGS = -Wall -c -std=c++11 -pthread
-LFLAGS = -Wall -std=c++11 -pthread
+CFLAGS = -c -std=c++11 -pthread
+LFLAGS = -std=c++11 -pthread
 # SOURCE = ../src/
 SOURCE = src/
 
