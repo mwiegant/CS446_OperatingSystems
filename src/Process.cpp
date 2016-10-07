@@ -76,6 +76,9 @@ void* threadRunner(void* _waitTime)
  * ===============================================================================
  */
 
+/*
+ * Constructor
+ */
 Process::Process(SimulatorSettings simulatorSettings, Logger* logger, queue<Instruction> instructionsQueue )
 {
   this->simulatorSettings = simulatorSettings;
@@ -84,8 +87,6 @@ Process::Process(SimulatorSettings simulatorSettings, Logger* logger, queue<Inst
 
   // set default state to ready
   processState = READY;
-
-  this->logger->log("successfully created a new process!!!");
 }
 
 
@@ -98,24 +99,29 @@ Process::~Process()
 /*
  * Cycles through all instructions in this process
  */
-void Process::Run()
+void Process::Run( int processNumber, timeval startTime )
 {
   char code;
   string descriptor;
   Instruction instruction;
+  bool stillRunning;
   int cycles, timePerCycle, runTime;
-  bool stillRunning = false;
   unsigned int memory = 0;
 
+  // assign the process id
+  processId = processNumber;
 
+  // assign the start time
+  referenceTime = startTime;
 
   // change state to running
   processState = RUNNING;
 
-  // todo
-
   while( !instructionsQueue.empty() )
   {
+
+    // set running flag
+    stillRunning = true;
 
     // get the next instruction
     instruction = instructionsQueue.front();
@@ -143,6 +149,9 @@ void Process::Run()
     logInstructionMessage(code, descriptor, stillRunning, memory);
 
   }
+
+  // assume if all instructions have been read that this process is terminating
+  processState = TERMINATED;
 
 }
 
@@ -220,13 +229,156 @@ int Process::getCycleTime(char code, string descriptor)
 
 
 /*
- * todo
+ * Log messages to the logger, according to:
+ *  - the type of instruction, and
+ *  - whether the instruction is about to run or just finished running
  */
 void Process::logInstructionMessage(char code, string descriptor, bool stillRunning, unsigned int memory)
 {
-  logger->log("generic logging message");
+  string message;
+  bool badInstruction = false;
 
-  // todo
+  // get the timestamp
+  message = timeToString( timePassed(referenceTime) ) + " - ";
+
+
+  // determine which message to log,
+  // based first on the code/descripter, and second on if it's running still or not
+  switch(code)
+  {
+    // case A
+    case 'A':
+
+      if( descriptor == "start")
+      {
+        if(stillRunning)  message += "OS: preparing process " + to_string(processId);
+        else              message += "OS: starting process " + to_string(processId);
+      }
+      else if( descriptor == "end")
+      {
+        if(stillRunning)  message += "OS: removing process " + to_string(processId);
+        else              message = "";
+      }
+      else
+      {
+        badInstruction = true;
+      }
+      break;
+
+    // case I
+    case 'I':
+
+      if( descriptor == "hard drive" )
+      {
+        if(stillRunning)  message += "Process " + to_string(processId) + ": start hard drive input";
+        else              message += "Process " + to_string(processId) + ": end hard drive input";
+      }
+      // todo - is there an input monitor command???
+      else if( descriptor == "monitor")
+      {
+        if(stillRunning)  message += "Process " + to_string(processId) + ": start monitor input";
+        else              message += "Process " + to_string(processId) + ": end monitor input";
+      }
+      else if( descriptor == "keyboard")
+      {
+        if(stillRunning)  message += "Process " + to_string(processId) + ": start keyboard input";
+        else              message += "Process " + to_string(processId) + ": end keyboard input";
+      }
+      else
+      {
+        badInstruction = true;
+      }
+      break;
+
+    // case O
+    case 'O':
+
+      if( descriptor == "hard drive" )
+      {
+        if(stillRunning)  message += "Process " + to_string(processId) + ": start hard drive output";
+        else              message += "Process " + to_string(processId) + ": end hard drive output";
+      }
+      else if( descriptor == "monitor")
+      {
+        if(stillRunning)  message += "Process " + to_string(processId) + ": start monitor output";
+        else              message += "Process " + to_string(processId) + ": end monitor output";
+      }
+      else if( descriptor == "printer" )
+      {
+        if(stillRunning)  message += "Process " + to_string(processId) + ": start printer output";
+        else              message += "Process " + to_string(processId) + ": end printer output";
+      }
+      else
+      {
+        badInstruction = true;
+      }
+      break;
+
+    // case P
+    case 'P':
+
+      if( descriptor == "run" )
+      {
+        if(stillRunning)  message += "Process " + to_string(processId) + ": start processing action";
+        else              message += "Process " + to_string(processId) + ": end processing action";
+      }
+      else
+      {
+        badInstruction = true;
+      }
+      break;
+
+    // case M
+    case 'M':
+
+      if( descriptor == "allocate" )
+      {
+        if(stillRunning)  message += "Process " + to_string(processId) + ": allocating memory";
+        else              message += "Process " + to_string(processId) + ": memory allocated at " + memoryToString(memory);
+      }
+      else if( descriptor == "cache")
+      {
+        if(stillRunning)  message += "Process " + to_string(processId) + ": start memory caching";
+        else              message += "Process " + to_string(processId) + ": end memory caching";
+      }
+      else
+      {
+        badInstruction = true;
+      }
+      break;
+
+    // case S
+    case 'S':
+
+      if( descriptor == "start" )
+      {
+        if(stillRunning)  message += "Simulator program starting";
+        else              message = "";
+      }
+      else if( descriptor == "end")
+      {
+        if(stillRunning)  message += "Simulator program ending";
+        else              message = "";
+      }
+      else
+      {
+        badInstruction = true;
+      }
+      break;
+  }
+
+  // check for bad instruction
+  if( badInstruction )
+  {
+    message = "Error - unrecognized instruction, with code '";
+    message += to_string(code) + "', and descriptor '" + descriptor + "'.";
+  }
+
+  // log the message, if there is a message to log
+  if( strlen(message.c_str()) > 0 )
+  {
+    logger->log(message);
+  }
 }
 
 
@@ -241,11 +393,6 @@ unsigned int Process::processsInstruction(char code, string descriptor, int runT
   unsigned int memory = 0;
   timeval referenceTime;
 
-  // todo - remove
-  string time = "runTime: " + to_string(runTime) + "\n";
-  printf(time.c_str());
-
-
   // get the time and store as a reference time
   gettimeofday( &referenceTime, NULL );
 
@@ -259,16 +406,11 @@ unsigned int Process::processsInstruction(char code, string descriptor, int runT
   // if the code is I or O, spawn a thread to do the waiting operation
   if( code == 'I' || code == 'O')
   {
-
-    logger->log("spawning a thread....");
-
     // spawn a thread
     pthread_create( &thread, NULL, threadRunner, (void*) &runTime );
 
     // wait for the thread to come back
     pthread_join(thread, NULL);
-
-    logger->log("thread has been rejoined...");
   }
 
   // else, do the waiting operation here
@@ -282,9 +424,64 @@ unsigned int Process::processsInstruction(char code, string descriptor, int runT
 }
 
 
+/*
+ * Asthetic function for nice-looking timestamps
+ *
+ * Converts a time passed from a raw number into a floating number representation
+ *
+ *   i.e., something like that: 0.123400  (where the time was 123400)
+ */
+string Process::timeToString(int time)
+{
+  // get the number components
+  int sec = time / 1000000;
+  int remainder = time % 1000000;
+
+  string stringRemainder = to_string(remainder);
+
+  // make the remainder larger so it has the right number of digits
+  // (example: 122 -> 000123)
+  while( strlen( stringRemainder.c_str() ) < 6 )
+  {
+    stringRemainder = "0" + stringRemainder;
+  }
+
+  // combine them together into a string
+  string result = to_string(sec) + "." + stringRemainder;
+
+  return result;
+}
 
 
+/*
+ * Asthetic function for nice-looking memory addressing.
+ *
+ * Converts a number from the total memory of the simulator to a hex address.
+ *
+ *  i.e., something like this: 0x0012345  (where there is total memory of 1000000)
+ */
+string Process::memoryToString(int _memoryAddress)
+{
+  // turn number values into strings
+  string totalMemory = to_string( simulatorSettings.systemMemory );
+  string memoryAddress = to_string( _memoryAddress );
 
+  // determine how many zeros I'll need (ex: the '00' in 0x0012345)
+  int zeros = strlen(totalMemory.c_str()) - strlen(memoryAddress.c_str());
+
+  string result = "0x";
+
+  // add zeros to the result string
+  for( zeros; zeros > 0; zeros--)
+  {
+    result += "0";
+  }
+
+  // finally, add the memory address to the result string
+  result += memoryAddress;
+
+  return result;
+}
 
 
 

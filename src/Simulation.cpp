@@ -93,6 +93,12 @@ bool Simulation::Initialize(char filePath[])
  */
 bool Simulation::Run()
 {
+  // for determining which process is running
+  int processCounter = 1;
+  timeval startTime;
+
+  // get the time
+  gettimeofday( &startTime, NULL );
 
   // divide the master queue of instructions into smaller queues inside processes
   createProcesses();
@@ -103,10 +109,13 @@ bool Simulation::Run()
   while( processes.size() > 0 )
   {
     // run the first process
-    processes[0].Run();
+    processes[0].Run( processCounter, startTime );
 
     // remove the first process after it finishes running
     processes.erase( processes.begin() );
+
+    // increment process counter
+    processCounter++;
   }
 
   return true;
@@ -122,6 +131,9 @@ void Simulation::logSimulationSettings()
 
   // begin logging to the file
   logger->log("Configuration File Data");
+
+  // log system memory
+  message = "System memory = " +to_string(cycleTimes.systemMemory) + " (kbytes)";
 
   // log processor settings
   message = "Processor = " + to_string(cycleTimes.processorCycleTime) + " ms/cycle";

@@ -15,7 +15,6 @@ struct Instruction
 struct SimulatorSettings
 {
   int systemMemory;
-
   int processorCycleTime;
   int monitorDisplayTime;
   int hardDriveCycleTime;

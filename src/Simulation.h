@@ -1,6 +1,8 @@
 #ifndef OPERATING_SYSTEM_SIMULATION_H
 #define OPERATING_SYSTEM_SIMULATION_H
 
+#include <time.h>
+#include <sys/time.h>
 #include <cstdio>
 #include <string>
 #include <fstream>
