@@ -28,6 +28,13 @@ struct SimulatorSettings
   int printerCycleTime;
   int keyboardCycleTime;
   int memoryCycleTime;
+
+  // new settings, since assignment 3
+  int memoryBlockSize;
+  int monitorQuantity;
+  int hardDriveQuantity;
+  int printerQuantity;
+  int keyboardQuantity;
 };
 
 // enumeration for a Process Control Block

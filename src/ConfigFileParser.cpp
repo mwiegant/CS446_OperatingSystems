@@ -17,6 +17,12 @@ ConfigFileParser::ConfigFileParser()
   memoryCycleTime = 0;
   systemMemory = 0;
 
+  memoryBlockSize = 0;
+  monitorQuantity = 1;
+  hardDriveQuantity = 1;
+  printerQuantity = 1;
+  keyboardQuantity = 1;
+
   logToMonitor = false;
   logToFile = false;
   logFileName = "";
@@ -64,6 +70,12 @@ bool ConfigFileParser::readInConfig(char filePath[])
  * Given a line of data from the config data, splits the line up and passes
  * the split up line to a final processing function to store data into the Simulation
  */
+
+/*
+ * Given a line of data from the config data, splits the line up at every space, and sends
+ * the first, second-to-last, and last tokens from the split-up line to the processData() function,
+ * which looks at those tokens to determine which setting is being set in that line.
+ */
 void ConfigFileParser::extractData(string fileData)
 {
   vector<string> splitData;
@@ -75,75 +87,113 @@ void ConfigFileParser::extractData(string fileData)
   // get the number of tokens in the split string
   vectorSize = splitData.size();
 
-  // send the first and last token of the split string to a processing function
-  processData(splitData[0], splitData[vectorSize - 1]);
+  // send the first, second-to-last, and last token of the split string to a processing function
+  processData(splitData[0], splitData[vectorSize - 2], splitData[vectorSize - 1]);
 }
 
 
 /*
- * Given a label and some data, determines which part of the Simulation to update
- * with the new data
+ * Given two labels and some data, determines which part of the Simulation to update
+ * with the new data.
+ *
+ * Ex:
+ * Hard drive quantity: 2
+ *
+ * label1: Hard
+ * label2: quantity
+ * data:   2
  */
-void ConfigFileParser::processData(string label, string data)
+void ConfigFileParser::processData(string label1, string label2, string data)
 {
   vector<string> logfilePathTokens;
 
   // process version
-  if( label == "Version/Phase:")
+  if( label1 == "Version/Phase:")
   {
     osVersion = stof(data);
   }
 
   // process metadata file path
-  else if( label == "File")
+  else if( label1 == "File")
   {
     strcpy( mdf_filePath, data.c_str() );
   }
 
+  // process memory block size
+  else if( label1 == "Memory" && label2 == "(kbytes):")
+  {
+    memoryBlockSize = stoi(data);
+    printf("inside memory block size statement in configFileParser");
+  }
+
+  // process monitor quantity
+  else if( label1 == "Monitor" && label2 == "quantity:")
+  {
+    monitorQuantity = stoi(data);
+  }
+
+  // process hard drive quantity
+  else if( label1 == "Hard" && label2 == "quantity:")
+  {
+    hardDriveQuantity = stoi(data);
+  }
+
+  // process printer quantity
+  else if( label1 == "Printer" && label2 == "quantity:")
+  {
+    printerQuantity = stoi(data);
+  }
+
+  // process keyboard quantity
+  else if( label1 == "Keyboard" && label2 == "quantity:")
+  {
+    keyboardQuantity = stoi(data);
+  }
+
   // process processor cycle time
-  else if( label == "Processor")
+  else if( label1 == "Processor")
   {
     processorCycleTime = stoi(data);
   }
 
   // process monitor display time
-  else if( label == "Monitor")
+  else if( label1 == "Monitor")
   {
     monitorDisplayTime = stoi(data);
   }
 
   // process hard drive cycle time
-  else if( label == "Hard")
+  else if( label1 == "Hard")
   {
     hardDriveCycleTime = stoi(data);
   }
 
   // process printer cycle time
-  else if( label == "Printer")
+  else if( label1 == "Printer")
   {
     printerCycleTime = stoi(data);
   }
 
   // process keyboard cycle time
-  else if( label == "Keyboard")
+  else if( label1 == "Keyboard")
   {
     keyboardCycleTime = stoi(data);
   }
 
   // process memory cycle time
-  else if( label == "Memory")
+  else if( label1 == "Memory")
   {
     memoryCycleTime = stoi(data);
   }
 
   // process system memory
-  else if( label == "System")
+  else if( label1 == "System")
   {
     systemMemory = stoi(data);
   }
 
   // process where to log
-  else if( label == "Log:")
+  else if( label1 == "Log:")
   {
     // determine where to log, based on the value of data
     if(data == "Both")
@@ -163,7 +213,7 @@ void ConfigFileParser::processData(string label, string data)
   }
 
   // process log file path
-  else if( label == "Log")
+  else if( label1 == "Log")
   {
     // extract the filename from the filepath
     splitString(data, '/', logfilePathTokens);
@@ -238,7 +288,18 @@ void ConfigFileParser::getLoggingInformation(bool& logToMonitor, bool& logToFile
   logFilePath = this->logFilePath;
 }
 
+void ConfigFileParser::getMemoryBlockSize(int& blockSize)
+{
+  blockSize = memoryBlockSize;
+}
 
+void ConfigFileParser::getDeviceQuantities(int& numMonitors, int& numHardDrives, int& numPrinters, int& numKeyboards)
+{
+  numMonitors = monitorQuantity;
+  numHardDrives = hardDriveQuantity;
+  numPrinters = printerQuantity;
+  numKeyboards = keyboardQuantity;
+}
 
 
 

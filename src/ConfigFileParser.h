@@ -37,11 +37,13 @@ class ConfigFileParser: public FileParser
     void getMemoryCycleTime(int& cycleTime);
     void getSystemMemory(int& systemMemory);
     void getLoggingInformation(bool& logToMonitor, bool& logToFile, string& logFileName, string& logFilePath);
+    void getMemoryBlockSize(int& blockSize);
+    void getDeviceQuantities(int& numMonitors, int& numHardDrives, int& numPrinters, int& numKeyboards);
 
   private:
     // for extracting and parsing in the config file
     void extractData(string fileData);
-    void processData(string label, string data);
+    void processData(string label1, string label2, string data);
 
     // Configuration Information
     float osVersion;
@@ -56,6 +58,13 @@ class ConfigFileParser: public FileParser
     int keyboardCycleTime;
     int memoryCycleTime;
     int systemMemory;
+
+    // Memory block size and device quantities
+    int memoryBlockSize;
+    int monitorQuantity;
+    int hardDriveQuantity;
+    int printerQuantity;
+    int keyboardQuantity;
 
     // Log File
     bool logToMonitor;

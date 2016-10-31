@@ -35,7 +35,7 @@ class Simulation
 
     bool Initialize(char filePath[]);
 
-    // used to being running meta instructions
+    // used to begin running meta instructions
     bool Run();
 
   private:

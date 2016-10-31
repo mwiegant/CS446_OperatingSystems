@@ -13,6 +13,15 @@ Simulation::Simulation()
   cycleTimes.memoryCycleTime = 0;
   cycleTimes.systemMemory = 0;
 
+  // new settings, since assignment 3
+  cycleTimes.memoryBlockSize = 0;   //todo - is a default value of 0 going to cause any problems with assigning memory in Processes?
+  cycleTimes.monitorQuantity = 1;
+  cycleTimes.hardDriveQuantity = 1;
+  cycleTimes.printerQuantity = 1;
+  cycleTimes.keyboardQuantity = 1;
+
+  // todo - setup mutexes and semaphores somewhere....
+
   logToMonitor = false;
   logToFile = false;
   logFileName = "";
@@ -57,6 +66,9 @@ bool Simulation::Initialize(char filePath[])
   configFileParser->getMemoryCycleTime( cycleTimes.memoryCycleTime );
   configFileParser->getSystemMemory( cycleTimes.systemMemory );
   configFileParser->getLoggingInformation( logToMonitor, logToFile, logFileName, logFilePath);
+  configFileParser->getMemoryBlockSize( cycleTimes.memoryBlockSize );
+  configFileParser->getDeviceQuantities( cycleTimes.monitorQuantity, cycleTimes.hardDriveQuantity,
+                                         cycleTimes.printerQuantity, cycleTimes.keyboardQuantity);
 
   // initialize the logger
   if( !logger->Initialize(logToMonitor, logToFile, logFilePath, true) )
@@ -136,6 +148,10 @@ void Simulation::logSimulationSettings()
   message = "System memory = " + to_string(cycleTimes.systemMemory) + " (kbytes)";
   logger->log(message);
 
+  // log memory block size
+  message = "Memory block size = " + to_string(cycleTimes.memoryBlockSize);
+  logger->log(message);
+
   // log processor settings
   message = "Processor = " + to_string(cycleTimes.processorCycleTime) + " ms/cycle";
   logger->log(message);
@@ -158,6 +174,19 @@ void Simulation::logSimulationSettings()
 
   // log memory settings
   message = "Memory = " + to_string(cycleTimes.memoryCycleTime) + " ms/cycle";
+  logger->log(message);
+
+  // log device quantities
+  message = "Monitors: " + to_string(cycleTimes.monitorQuantity);
+  logger->log(message);
+
+  message = "Hard Drives: " + to_string(cycleTimes.hardDriveQuantity);
+  logger->log(message);
+
+  message = "Printers: " + to_string(cycleTimes.printerQuantity);
+  logger->log(message);
+
+  message = "Keyboards: " + to_string(cycleTimes.keyboardQuantity);
   logger->log(message);
 
   // setup the message to log the settings on where the simulation is logging
