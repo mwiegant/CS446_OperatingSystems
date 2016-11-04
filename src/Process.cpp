@@ -79,8 +79,9 @@ void* threadRunner(void* _waitTime)
 /*
  * Constructor
  */
-Process::Process(SimulatorSettings simulatorSettings, Logger* logger, queue<Instruction> instructionsQueue )
+Process::Process(int processId, SimulatorSettings simulatorSettings, Logger* logger, queue<Instruction> instructionsQueue )
 {
+  this->processId = processId;
   this->simulatorSettings = simulatorSettings;
   this->logger = logger;
   this->instructionsQueue = instructionsQueue;
@@ -99,7 +100,7 @@ Process::~Process()
 /*
  * Cycles through all instructions in this process
  */
-void Process::Run( int processNumber, timeval startTime )
+void Process::Run( timeval startTime )
 {
   char code;
   string descriptor;
@@ -107,9 +108,6 @@ void Process::Run( int processNumber, timeval startTime )
   bool stillRunning;
   int cycles, timePerCycle, runTime;
   unsigned int memory = 0;
-
-  // assign the process id
-  processId = processNumber;
 
   // assign the start time
   referenceTime = startTime;

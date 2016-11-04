@@ -47,10 +47,10 @@ void* threadRunner(void* _waitTime);
 class Process
 {
   public:
-    Process(SimulatorSettings simulatorSettings, Logger* logger, queue<Instruction> instructionsQueue );
+    Process(int processId, SimulatorSettings simulatorSettings, Logger* logger, queue<Instruction> instructionsQueue );
     ~Process();
 
-    void Run( int processNumber, timeval startTime );
+    void Run( timeval startTime );
 
   private:
 
@@ -70,6 +70,9 @@ class Process
 
     // thread object
     pthread_t thread;
+
+    // process id number
+    int pid;
 
     // the state of this process
     ProcessControlBlock processState;

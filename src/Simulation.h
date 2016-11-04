@@ -61,11 +61,14 @@ class Simulation
     // Logging Object
     Logger *logger;
 
-    // Vector for holding processes
-    vector<Process> processes;
-
     // Queue for holding instructions
     queue<Instruction> instructionsQueue;
+
+    // Queues for PCB implementation
+    Process* runningProcess;
+    queue<Process> readyQueue;
+    queue<Process> waitingQueue;
+
 };
 
 #endif //OPERATING_SYSTEM_SIMULATION_H

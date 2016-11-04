@@ -118,13 +118,15 @@ bool Simulation::Run()
   logger->log("Meta-Data Metrics");
 
   // run through each process
-  while( processes.size() > 0 )
+  while( readyQueue.size() > 0 )
   {
-    // run the first process
-    processes[0].Run( processCounter, startTime );
+    // dequeue the first process from the ready queue
+    runningProcess = &(readyQueue.front());
 
-    // remove the first process after it finishes running
-    processes.erase( processes.begin() );
+    // run the first process
+    runningProcess->Run( startTime );
+
+    readyQueue.pop();
 
     // increment process counter
     processCounter++;
@@ -219,6 +221,7 @@ void Simulation::createProcesses()
   queue<Instruction> processQueue;
   Instruction instruction;
   Process* process;
+  int processId = 1;
 
   while( !instructionsQueue.empty() )
   {
@@ -242,9 +245,9 @@ void Simulation::createProcesses()
       }
 
       // create a new process
-      process = new Process(cycleTimes, logger, processQueue);
+      process = new Process(processId, cycleTimes, logger, processQueue);
 
-      processes.push_back( *process );
+      readyQueue.push( *process );
 
       // empty the process queue, for the next process
       while( !processQueue.empty() )
