@@ -47,7 +47,13 @@ enum ProcessControlBlock
   TERMINATED
 };
 
-
-
+// enumeration for keeping track of items in mutexes and semaphores
+enum Devices
+{
+  MONITOR,
+  HDD,
+  PRINTER,
+  KEYBOARD
+};
 
 #endif //OPERATING_SYSTEM_STRUCTURES_H

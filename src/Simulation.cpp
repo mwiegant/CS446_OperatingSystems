@@ -5,22 +5,20 @@ Simulation::Simulation()
   osVersion = 0.0f;
   cpuSchedulingCode = "";
 
-  cycleTimes.processorCycleTime = 0;
-  cycleTimes.monitorDisplayTime = 0;
-  cycleTimes.hardDriveCycleTime = 0;
-  cycleTimes.printerCycleTime = 0;
-  cycleTimes.keyboardCycleTime = 0;
-  cycleTimes.memoryCycleTime = 0;
-  cycleTimes.systemMemory = 0;
+  settings.processorCycleTime = 0;
+  settings.monitorDisplayTime = 0;
+  settings.hardDriveCycleTime = 0;
+  settings.printerCycleTime = 0;
+  settings.keyboardCycleTime = 0;
+  settings.memoryCycleTime = 0;
+  settings.systemMemory = 0;
 
   // new settings, since assignment 3
-  cycleTimes.memoryBlockSize = 0;   //todo - is a default value of 0 going to cause any problems with assigning memory in Processes?
-  cycleTimes.monitorQuantity = 1;
-  cycleTimes.hardDriveQuantity = 1;
-  cycleTimes.printerQuantity = 1;
-  cycleTimes.keyboardQuantity = 1;
-
-  // todo - setup mutexes and semaphores somewhere....
+  settings.memoryBlockSize = 0;   //todo - is a default value of 0 going to cause any problems with assigning memory in Processes?
+  settings.monitorQuantity = 1;
+  settings.hardDriveQuantity = 1;
+  settings.printerQuantity = 1;
+  settings.keyboardQuantity = 1;
 
   logToMonitor = false;
   logToFile = false;
@@ -28,11 +26,13 @@ Simulation::Simulation()
   logFilePath = "";
 
   logger = new Logger();
+  resourceManager = new ResourceManager(4); // where 4 is the number of unique resource types in this simulation
 }
 
 Simulation::~Simulation()
 {
-
+  delete logger;
+  delete resourceManager;
 }
 
 
@@ -58,22 +58,30 @@ bool Simulation::Initialize(char filePath[])
   configFileParser->getOSVersion( osVersion );
   configFileParser->getMetaFilePath( mdf_filePath );
   configFileParser->getSchedulingCode( cpuSchedulingCode );
-  configFileParser->getProcessorCycleTime( cycleTimes.processorCycleTime );
-  configFileParser->getMonitorCycleTime( cycleTimes.monitorDisplayTime );
-  configFileParser->getHardDriveCycleTime( cycleTimes.hardDriveCycleTime );
-  configFileParser->getPrinterCycleTime( cycleTimes.printerCycleTime );
-  configFileParser->getKeyboardCycleTime( cycleTimes.keyboardCycleTime );
-  configFileParser->getMemoryCycleTime( cycleTimes.memoryCycleTime );
-  configFileParser->getSystemMemory( cycleTimes.systemMemory );
+  configFileParser->getProcessorCycleTime( settings.processorCycleTime );
+  configFileParser->getMonitorCycleTime( settings.monitorDisplayTime );
+  configFileParser->getHardDriveCycleTime( settings.hardDriveCycleTime );
+  configFileParser->getPrinterCycleTime( settings.printerCycleTime );
+  configFileParser->getKeyboardCycleTime( settings.keyboardCycleTime );
+  configFileParser->getMemoryCycleTime( settings.memoryCycleTime );
+  configFileParser->getSystemMemory( settings.systemMemory );
   configFileParser->getLoggingInformation( logToMonitor, logToFile, logFileName, logFilePath);
-  configFileParser->getMemoryBlockSize( cycleTimes.memoryBlockSize );
-  configFileParser->getDeviceQuantities( cycleTimes.monitorQuantity, cycleTimes.hardDriveQuantity,
-                                         cycleTimes.printerQuantity, cycleTimes.keyboardQuantity);
+  configFileParser->getMemoryBlockSize( settings.memoryBlockSize );
+  configFileParser->getDeviceQuantities( settings.monitorQuantity, settings.hardDriveQuantity,
+                                         settings.printerQuantity, settings.keyboardQuantity);
 
   // initialize the logger
   if( !logger->Initialize(logToMonitor, logToFile, logFilePath, true) )
   {
     printf("Error - failed to initialize the logger.\n");
+    return false;
+  }
+
+  // initialize the resource manager
+  if( !resourceManager->Initialize(settings.monitorQuantity, settings.hardDriveQuantity,
+                                   settings.printerQuantity, settings.keyboardQuantity) )
+  {
+    printf("Error - failed to iniitialize the resource manager.\n");
     return false;
   }
 
@@ -101,6 +109,7 @@ bool Simulation::Initialize(char filePath[])
 /*
  * Kicks off the entire simulation, including:
  *  - creating processes from the set of meta instructions
+ *
  *  - running each process until their completion (or interruption)
  */
 bool Simulation::Run()
@@ -147,48 +156,48 @@ void Simulation::logSimulationSettings()
   logger->log("Configuration File Data");
 
   // log system memory
-  message = "System memory = " + to_string(cycleTimes.systemMemory) + " (kbytes)";
+  message = "System memory = " + to_string(settings.systemMemory) + " (kbytes)";
   logger->log(message);
 
   // log memory block size
-  message = "Memory block size = " + to_string(cycleTimes.memoryBlockSize);
+  message = "Memory block size = " + to_string(settings.memoryBlockSize);
   logger->log(message);
 
   // log processor settings
-  message = "Processor = " + to_string(cycleTimes.processorCycleTime) + " ms/cycle";
+  message = "Processor = " + to_string(settings.processorCycleTime) + " ms/cycle";
   logger->log(message);
 
   // log monitor settings
-  message = "Monitor = " + to_string(cycleTimes.monitorDisplayTime) + " ms/cycle";
+  message = "Monitor = " + to_string(settings.monitorDisplayTime) + " ms/cycle";
   logger->log(message);
 
   // log hard drive settings
-  message = "Hard Drive = " + to_string(cycleTimes.hardDriveCycleTime) + " ms/cycle";
+  message = "Hard Drive = " + to_string(settings.hardDriveCycleTime) + " ms/cycle";
   logger->log(message);
 
   // log printer settings
-  message = "Printer = " + to_string(cycleTimes.printerCycleTime) + " ms/cycle";
+  message = "Printer = " + to_string(settings.printerCycleTime) + " ms/cycle";
   logger->log(message);
 
   // log keyboard settings
-  message = "Keyboard = " + to_string(cycleTimes.keyboardCycleTime) + " ms/cycle";
+  message = "Keyboard = " + to_string(settings.keyboardCycleTime) + " ms/cycle";
   logger->log(message);
 
   // log memory settings
-  message = "Memory = " + to_string(cycleTimes.memoryCycleTime) + " ms/cycle";
+  message = "Memory = " + to_string(settings.memoryCycleTime) + " ms/cycle";
   logger->log(message);
 
   // log device quantities
-  message = "Monitors: " + to_string(cycleTimes.monitorQuantity);
+  message = "Monitors: " + to_string(settings.monitorQuantity);
   logger->log(message);
 
-  message = "Hard Drives: " + to_string(cycleTimes.hardDriveQuantity);
+  message = "Hard Drives: " + to_string(settings.hardDriveQuantity);
   logger->log(message);
 
-  message = "Printers: " + to_string(cycleTimes.printerQuantity);
+  message = "Printers: " + to_string(settings.printerQuantity);
   logger->log(message);
 
-  message = "Keyboards: " + to_string(cycleTimes.keyboardQuantity);
+  message = "Keyboards: " + to_string(settings.keyboardQuantity);
   logger->log(message);
 
   // setup the message to log the settings on where the simulation is logging
@@ -245,7 +254,7 @@ void Simulation::createProcesses()
       }
 
       // create a new process
-      process = new Process(processId, cycleTimes, logger, processQueue);
+      process = new Process(processId, settings, logger, resourceManager, processQueue);
 
       readyQueue.push( *process );
 

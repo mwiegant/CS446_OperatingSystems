@@ -22,6 +22,7 @@
 
 #include "ConfigFileParser.h"
 #include "MetaFileParser.h"
+#include "ResourceManager.h"
 #include "Process.h"
 #include "Logger.h"
 
@@ -44,13 +45,16 @@ class Simulation
     // splits instructions among processes
     void createProcesses();
 
+    // for initializing mutexes and semaphores
+    void initializeSyncDevices();
+
     // Configuration Information
     float osVersion;
     char mdf_filePath[50];
     string cpuSchedulingCode;
 
     // Processing Times
-    SimulatorSettings cycleTimes;
+    SimulatorSettings settings;
 
     // Log File
     bool logToMonitor;
@@ -60,6 +64,9 @@ class Simulation
 
     // Logging Object
     Logger *logger;
+
+    // Resource Manager
+    ResourceManager* resourceManager;
 
     // Queue for holding instructions
     queue<Instruction> instructionsQueue;

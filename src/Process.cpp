@@ -79,11 +79,13 @@ void* threadRunner(void* _waitTime)
 /*
  * Constructor
  */
-Process::Process(int processId, SimulatorSettings simulatorSettings, Logger* logger, queue<Instruction> instructionsQueue )
+Process::Process(int processId, SimulatorSettings simulatorSettings, Logger* logger, ResourceManager* resourceManager,
+                 queue<Instruction> instructionsQueue )
 {
   this->processId = processId;
   this->simulatorSettings = simulatorSettings;
   this->logger = logger;
+  this->resourceManager = resourceManager;
   this->instructionsQueue = instructionsQueue;
 
   // set default state to ready

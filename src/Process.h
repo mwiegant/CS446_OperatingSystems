@@ -20,6 +20,7 @@
 
 #include "Structures.h"
 #include "Logger.h"
+#include "ResourceManager.h"
 
 using namespace std;
 
@@ -47,7 +48,8 @@ void* threadRunner(void* _waitTime);
 class Process
 {
   public:
-    Process(int processId, SimulatorSettings simulatorSettings, Logger* logger, queue<Instruction> instructionsQueue );
+    Process(int processId, SimulatorSettings simulatorSettings, Logger* logger, ResourceManager* resourceManager,
+            queue<Instruction> instructionsQueue );
     ~Process();
 
     void Run( timeval startTime );
@@ -81,7 +83,10 @@ class Process
     SimulatorSettings simulatorSettings;
 
     // Logging Object
-    Logger *logger;
+    Logger* logger;
+
+    // Resource Manager Object
+    ResourceManager* resourceManager;
 
     // Queue for holding instructions
     queue<Instruction> instructionsQueue;
