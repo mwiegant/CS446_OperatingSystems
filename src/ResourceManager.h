@@ -23,7 +23,7 @@ class ResourceManager
     ResourceManager(int uniqueResourceTypes);
     ~ResourceManager();
 
-    bool Initialize(int monitorQuantity, int hddQuantity, int printerQuantity, int keyboardQuantity);
+    bool Initialize(int hddQuantity, int printerQuantity, int keyboardQuantity);
 
     bool RequestResource(int resourceType, int& resourceIndex);
     bool FreeResource(int resourceType, int resourceIndex);

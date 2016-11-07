@@ -435,11 +435,7 @@ unsigned int Process::processInstruction(char code, string descriptor, int runTi
  */
 bool Process::acquireResources(string descriptor)
 {
-  if(descriptor == "monitor")
-  {
-    return resourceManager->RequestResource(MONITOR, resourceIndex);
-  }
-  else if(descriptor == "hard drive")
+  if(descriptor == "hard drive")
   {
     return resourceManager->RequestResource(HDD, resourceIndex);
   }
@@ -464,11 +460,7 @@ bool Process::acquireResources(string descriptor)
  */
 bool Process::returnResources(string descriptor)
 {
-  if(descriptor == "monitor")
-  {
-    return resourceManager->FreeResource(MONITOR, resourceIndex);
-  }
-  else if(descriptor == "hard drive")
+  if(descriptor == "hard drive")
   {
     return resourceManager->FreeResource(HDD, resourceIndex);
   }

@@ -15,7 +15,6 @@ Simulation::Simulation()
 
   // new settings, since assignment 3
   settings.memoryBlockSize = 0;   //todo - is a default value of 0 going to cause any problems with assigning memory in Processes?
-  settings.monitorQuantity = 1;
   settings.hardDriveQuantity = 1;
   settings.printerQuantity = 1;
   settings.keyboardQuantity = 1;
@@ -26,7 +25,7 @@ Simulation::Simulation()
   logFilePath = "";
 
   logger = new Logger();
-  resourceManager = new ResourceManager(4); // where 4 is the number of unique resource types in this simulation
+  resourceManager = new ResourceManager(3); // where 3 is the number of unique resource types in this simulation
 }
 
 Simulation::~Simulation()
@@ -67,8 +66,7 @@ bool Simulation::Initialize(char filePath[])
   configFileParser->getSystemMemory( settings.systemMemory );
   configFileParser->getLoggingInformation( logToMonitor, logToFile, logFileName, logFilePath);
   configFileParser->getMemoryBlockSize( settings.memoryBlockSize );
-  configFileParser->getDeviceQuantities( settings.monitorQuantity, settings.hardDriveQuantity,
-                                         settings.printerQuantity, settings.keyboardQuantity);
+  configFileParser->getDeviceQuantities( settings.hardDriveQuantity, settings.printerQuantity, settings.keyboardQuantity);
 
   // initialize the logger
   if( !logger->Initialize(logToMonitor, logToFile, logFilePath, true) )
@@ -78,8 +76,7 @@ bool Simulation::Initialize(char filePath[])
   }
 
   // initialize the resource manager
-  if( !resourceManager->Initialize(settings.monitorQuantity, settings.hardDriveQuantity,
-                                   settings.printerQuantity, settings.keyboardQuantity) )
+  if( !resourceManager->Initialize(settings.hardDriveQuantity, settings.printerQuantity, settings.keyboardQuantity) )
   {
     printf("Error - failed to iniitialize the resource manager.\n");
     return false;
@@ -160,7 +157,7 @@ void Simulation::logSimulationSettings()
   logger->log(message);
 
   // log memory block size
-  message = "Memory block size = " + to_string(settings.memoryBlockSize);
+  message = "Memory block size = " + to_string(settings.memoryBlockSize) + " (kbytes)";
   logger->log(message);
 
   // log processor settings
@@ -185,10 +182,6 @@ void Simulation::logSimulationSettings()
 
   // log memory settings
   message = "Memory = " + to_string(settings.memoryCycleTime) + " ms/cycle";
-  logger->log(message);
-
-  // log device quantities
-  message = "Monitors: " + to_string(settings.monitorQuantity);
   logger->log(message);
 
   message = "Hard Drives: " + to_string(settings.hardDriveQuantity);

@@ -31,7 +31,6 @@ struct SimulatorSettings
 
   // new settings, since assignment 3
   int memoryBlockSize;
-  int monitorQuantity;
   int hardDriveQuantity;
   int printerQuantity;
   int keyboardQuantity;
@@ -50,7 +49,6 @@ enum ProcessControlBlock
 // enumeration for keeping track of items in mutexes and semaphores
 enum Devices
 {
-  MONITOR,
   HDD,
   PRINTER,
   KEYBOARD

@@ -18,7 +18,6 @@ ConfigFileParser::ConfigFileParser()
   systemMemory = 0;
 
   memoryBlockSize = 0;
-  monitorQuantity = 1;
   hardDriveQuantity = 1;
   printerQuantity = 1;
   keyboardQuantity = 1;
@@ -124,12 +123,6 @@ void ConfigFileParser::processData(string label1, string label2, string data)
   {
     memoryBlockSize = stoi(data);
     printf("inside memory block size statement in configFileParser");
-  }
-
-  // process monitor quantity
-  else if( label1 == "Monitor" && label2 == "quantity:")
-  {
-    monitorQuantity = stoi(data);
   }
 
   // process hard drive quantity
@@ -293,9 +286,8 @@ void ConfigFileParser::getMemoryBlockSize(int& blockSize)
   blockSize = memoryBlockSize;
 }
 
-void ConfigFileParser::getDeviceQuantities(int& numMonitors, int& numHardDrives, int& numPrinters, int& numKeyboards)
+void ConfigFileParser::getDeviceQuantities(int& numHardDrives, int& numPrinters, int& numKeyboards)
 {
-  numMonitors = monitorQuantity;
   numHardDrives = hardDriveQuantity;
   numPrinters = printerQuantity;
   numKeyboards = keyboardQuantity;

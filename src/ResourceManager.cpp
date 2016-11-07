@@ -12,18 +12,16 @@ ResourceManager::~ResourceManager()
 
 }
 
-bool ResourceManager::Initialize(int monitorQuantity, int hddQuantity, int printerQuantity, int keyboardQuantity)
+bool ResourceManager::Initialize(int hddQuantity, int printerQuantity, int keyboardQuantity)
 {
   // initialize semaphores and maximum resource amounts
   semaphores = new int[numResourceTypes];
   maximumResources = new int[numResourceTypes];
 
-  semaphores[MONITOR] = monitorQuantity;
   semaphores[HDD] = hddQuantity;
   semaphores[PRINTER] = printerQuantity;
   semaphores[KEYBOARD] = keyboardQuantity;
 
-  maximumResources[MONITOR] = monitorQuantity;
   maximumResources[HDD] = hddQuantity;
   maximumResources[PRINTER] = printerQuantity;
   maximumResources[KEYBOARD] = keyboardQuantity;
@@ -32,17 +30,11 @@ bool ResourceManager::Initialize(int monitorQuantity, int hddQuantity, int print
   mutexes = new bool*[numResourceTypes];
 
   // initialize the arrays of pointers that mutexes point to
-  mutexes[MONITOR] = new bool[monitorQuantity];
   mutexes[HDD] = new bool[hddQuantity];
   mutexes[PRINTER] = new bool[printerQuantity];
   mutexes[KEYBOARD] = new bool[keyboardQuantity];
 
   // set default values of true to every mutex flag
-  for(int i = 0; i < monitorQuantity; i++)
-  {
-    mutexes[MONITOR][i] = true;
-  }
-
   for(int i = 0; i < hddQuantity; i++)
   {
     mutexes[HDD][i] = true;
