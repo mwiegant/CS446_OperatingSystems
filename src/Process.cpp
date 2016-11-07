@@ -275,7 +275,7 @@ void Process::logInstructionMessage(char code, string descriptor, bool stillRunn
 
       if( descriptor == "hard drive" )
       {
-        if(stillRunning)  message += "Process " + to_string(processId) + ": start hard drive input";
+        if(stillRunning)  message += "Process " + to_string(processId) + ": start hard drive input on HDD " + to_string(resourceIndex);
         else              message += "Process " + to_string(processId) + ": end hard drive input";
       }
       // todo - is there an input monitor command???
@@ -286,7 +286,7 @@ void Process::logInstructionMessage(char code, string descriptor, bool stillRunn
       }
       else if( descriptor == "keyboard")
       {
-        if(stillRunning)  message += "Process " + to_string(processId) + ": start keyboard input";
+        if(stillRunning)  message += "Process " + to_string(processId) + ": start keyboard input on KEYBOARD " + to_string(resourceIndex);
         else              message += "Process " + to_string(processId) + ": end keyboard input";
       }
       else
@@ -300,7 +300,7 @@ void Process::logInstructionMessage(char code, string descriptor, bool stillRunn
 
       if( descriptor == "hard drive" )
       {
-        if(stillRunning)  message += "Process " + to_string(processId) + ": start hard drive output";
+        if(stillRunning)  message += "Process " + to_string(processId) + ": start hard drive output on HDD " + to_string(resourceIndex);
         else              message += "Process " + to_string(processId) + ": end hard drive output";
       }
       else if( descriptor == "monitor")
@@ -310,7 +310,7 @@ void Process::logInstructionMessage(char code, string descriptor, bool stillRunn
       }
       else if( descriptor == "printer" )
       {
-        if(stillRunning)  message += "Process " + to_string(processId) + ": start printer output";
+        if(stillRunning)  message += "Process " + to_string(processId) + ": start printer output on PRINTER " + to_string(resourceIndex);
         else              message += "Process " + to_string(processId) + ": end printer output";
       }
       else
