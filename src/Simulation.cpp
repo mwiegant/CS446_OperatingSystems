@@ -76,7 +76,8 @@ bool Simulation::Initialize(char filePath[])
   }
 
   // initialize the resource manager
-  if( !resourceManager->Initialize(settings.hardDriveQuantity, settings.printerQuantity, settings.keyboardQuantity) )
+  if( !resourceManager->Initialize(settings.hardDriveQuantity, settings.printerQuantity, settings.keyboardQuantity,
+                                    settings.systemMemory, settings.memoryBlockSize) )
   {
     printf("Error - failed to iniitialize the resource manager.\n");
     return false;

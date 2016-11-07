@@ -12,45 +12,20 @@ ResourceManager::~ResourceManager()
 
 }
 
-bool ResourceManager::Initialize(int hddQuantity, int printerQuantity, int keyboardQuantity)
+bool ResourceManager::Initialize(int hddQuantity, int printerQuantity, int keyboardQuantity,
+                                 int totalMemory, int memoryBlockSize)
 {
-  // initialize semaphores and maximum resource amounts
-  semaphores = new int[numResourceTypes];
-  maximumResources = new int[numResourceTypes];
-
-  semaphores[HDD] = hddQuantity;
-  semaphores[PRINTER] = printerQuantity;
-  semaphores[KEYBOARD] = keyboardQuantity;
-
-  maximumResources[HDD] = hddQuantity;
-  maximumResources[PRINTER] = printerQuantity;
-  maximumResources[KEYBOARD] = keyboardQuantity;
-
-  // initialize mutexes
-  mutexes = new bool*[numResourceTypes];
-
-  // initialize the arrays of pointers that mutexes point to
-  mutexes[HDD] = new bool[hddQuantity];
-  mutexes[PRINTER] = new bool[printerQuantity];
-  mutexes[KEYBOARD] = new bool[keyboardQuantity];
-
-  // set default values of true to every mutex flag
-  for(int i = 0; i < hddQuantity; i++)
+  // initialize quantified resources
+  if( !InitializeQuantities( hddQuantity, printerQuantity, keyboardQuantity ) )
   {
-    mutexes[HDD][i] = true;
+    return false;
   }
 
-  for(int i = 0; i < printerQuantity; i++)
+  // initialize memory resources
+  if( !InitializeMemory( totalMemory, memoryBlockSize ) )
   {
-    mutexes[PRINTER][i] = true;
+    return false;
   }
-
-  for(int i = 0; i < keyboardQuantity; i++)
-  {
-    mutexes[KEYBOARD][i] = true;
-  }
-
-  initialized = true;
 
   return true;
 }
@@ -123,3 +98,95 @@ bool ResourceManager::FreeResource(int resourceType, int resourceIndex)
 
   return true;
 }
+
+
+bool ResourceManager::RequestMemory(int& theMemoryLocation)
+{
+
+  // temp
+  return true;
+}
+
+bool ResourceManager::FreeMemory(int& theMemoryLocation)
+{
+
+  // temp
+  return true;
+}
+
+
+/*
+ * Handles set up of semaphores and mutexes for quantified resources such as hard drives
+ * or printers.
+ */
+bool ResourceManager::InitializeQuantities(int hddQuantity, int printerQuantity, int keyboardQuantity)
+{
+  // initialize semaphores and maximum resource amounts
+  semaphores = new int[numResourceTypes];
+  maximumResources = new int[numResourceTypes];
+
+  semaphores[HDD] = hddQuantity;
+  semaphores[PRINTER] = printerQuantity;
+  semaphores[KEYBOARD] = keyboardQuantity;
+
+  maximumResources[HDD] = hddQuantity;
+  maximumResources[PRINTER] = printerQuantity;
+  maximumResources[KEYBOARD] = keyboardQuantity;
+
+  // initialize mutexes
+  mutexes = new bool*[numResourceTypes];
+
+  // initialize the arrays of pointers that mutexes point to
+  mutexes[HDD] = new bool[hddQuantity];
+  mutexes[PRINTER] = new bool[printerQuantity];
+  mutexes[KEYBOARD] = new bool[keyboardQuantity];
+
+  // set default values of true to every mutex flag
+  for(int i = 0; i < hddQuantity; i++)
+  {
+    mutexes[HDD][i] = true;
+  }
+
+  for(int i = 0; i < printerQuantity; i++)
+  {
+    mutexes[PRINTER][i] = true;
+  }
+
+  for(int i = 0; i < keyboardQuantity; i++)
+  {
+    mutexes[KEYBOARD][i] = true;
+  }
+
+  initialized = true;
+
+  return true;
+}
+
+
+/*
+ * Handles the set up of memory resources, including setting up structures that
+ * will be used to provide access to memory or keep track of which memory
+ * addresses are already in use.
+ */
+bool ResourceManager::InitializeMemory(int _totalMemory, int _memoryBlockSize)
+{
+  // initialize memory management variables
+  totalMemory = _totalMemory;
+  memoryBlockSize = _memoryBlockSize;
+
+  currentMemoryBlock = 0;
+
+  // calculate the total number of blocks of memory
+  totalMemoryBlocks = totalMemory / memoryBlockSize;
+
+  if( totalMemory % memoryBlockSize != 0 )
+  {
+    totalMemoryBlocks++;
+  }
+
+  return true;
+}
+
+
+
+
