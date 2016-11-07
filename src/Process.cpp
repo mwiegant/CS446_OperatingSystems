@@ -138,11 +138,17 @@ void Process::Run( timeval startTime )
     // compute the total time to process the instruction
     runTime = cycles * timePerCycle * 1000;
 
+    // acquire any resources that may be needed for this instruction
+    acquireResources(descriptor);
+
     // log a message about this instruction
     logInstructionMessage(code, descriptor, stillRunning, memory);
 
     // process the instruction elsewhere
-    memory = processsInstruction(code, descriptor, runTime);
+    memory = processInstruction(code, descriptor, runTime);
+
+    // free up any resources that may have been used for this instruction
+    returnResources(descriptor);
 
     // log a final message about this instruction
     stillRunning = false;
@@ -152,7 +158,6 @@ void Process::Run( timeval startTime )
 
   // assume if all instructions have been read that this process is terminating
   processState = TERMINATED;
-
 }
 
 
@@ -388,7 +393,7 @@ void Process::logInstructionMessage(char code, string descriptor, bool stillRunn
  *  - creating a thread, which will wait for a set time
  *  - doing nothing, and then waiting for a set time
  */
-unsigned int Process::processsInstruction(char code, string descriptor, int runTime)
+unsigned int Process::processInstruction(char code, string descriptor, int runTime)
 {
   unsigned int memory = 0;
   timeval referenceTime;
@@ -421,6 +426,64 @@ unsigned int Process::processsInstruction(char code, string descriptor, int runT
 
   // return
   return memory;
+}
+
+
+/*
+ * Acquire the resources needed for the next instruction, if that instruction
+ * requires resources.
+ */
+bool Process::acquireResources(string descriptor)
+{
+  if(descriptor == "monitor")
+  {
+    return resourceManager->RequestResource(MONITOR, resourceIndex);
+  }
+  else if(descriptor == "hard drive")
+  {
+    return resourceManager->RequestResource(HDD, resourceIndex);
+  }
+  else if(descriptor == "printer")
+  {
+    return resourceManager->RequestResource(PRINTER, resourceIndex);
+  }
+  else if(descriptor == "keyboard")
+  {
+    return resourceManager->RequestResource(KEYBOARD, resourceIndex);
+  }
+  else
+  {
+    return false;
+  }
+}
+
+
+/*
+ * Attempt to return the resources that were taken for the last instruction, assuming
+ * that instruction required resources.
+ */
+bool Process::returnResources(string descriptor)
+{
+  if(descriptor == "monitor")
+  {
+    return resourceManager->FreeResource(MONITOR, resourceIndex);
+  }
+  else if(descriptor == "hard drive")
+  {
+    return resourceManager->FreeResource(HDD, resourceIndex);
+  }
+  else if(descriptor == "printer")
+  {
+    return resourceManager->FreeResource(PRINTER, resourceIndex);
+  }
+  else if(descriptor == "keyboard")
+  {
+    return resourceManager->FreeResource(KEYBOARD, resourceIndex);
+  }
+  else
+  {
+    return false;
+  }
 }
 
 

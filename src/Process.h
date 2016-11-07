@@ -52,7 +52,7 @@ class Process
             queue<Instruction> instructionsQueue );
     ~Process();
 
-    void Run( timeval startTime );
+    void Run(timeval startTime);
 
   private:
 
@@ -60,7 +60,11 @@ class Process
 
     void logInstructionMessage(char code, string descriptor, bool stillRunning, unsigned int memory);
 
-    unsigned int processsInstruction(char code, string descriptor, int runTime);
+    unsigned int processInstruction(char code, string descriptor, int runTime);
+
+    // resource management functions
+    bool acquireResources(string descriptor);
+    bool returnResources(string descriptor);
 
     // logging helper functions
     string timeToString(int time);
@@ -87,6 +91,7 @@ class Process
 
     // Resource Manager Object
     ResourceManager* resourceManager;
+    int resourceIndex;
 
     // Queue for holding instructions
     queue<Instruction> instructionsQueue;
