@@ -100,6 +100,8 @@ bool Simulation::Initialize(char filePath[])
   configFileParser = NULL;
   metaFileParser = NULL;
 
+  logger->log("test..test..test");
+
   return true;
 }
 
