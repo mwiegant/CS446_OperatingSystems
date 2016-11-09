@@ -499,7 +499,7 @@ bool Process::returnResources(string descriptor)
 string Process::timeToString(int time)
 {
   // get the number components
-  int sec = time / 1000000;
+  int sec = (time == 0) ? 0 : time / 1000000;
   int remainder = time % 1000000;
 
   string stringRemainder = to_string(remainder);
