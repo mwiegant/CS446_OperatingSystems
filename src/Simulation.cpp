@@ -199,7 +199,8 @@ void Simulation::logSimulationSettings()
 
   if(logToMonitor && logToFile)
   {
-    message += "monitor and " + logFileName;
+//    message += "monitor and " + logFileName;
+    message += "monitor";
   }
   else if(logToMonitor)
   {

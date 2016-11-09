@@ -528,18 +528,43 @@ string Process::timeToString(int time)
 string Process::memoryToString(int memoryAddress)
 {
   // variable initialization
+  string hexAddress = "";
+  vector<int> digits;
+  int total = memoryAddress;
+  int remainder;
 
   // convert memoryAddress to hex
+  while( total > 0 )
+  {
+    remainder = total % 16;
+    total = total / 16;
 
-  // add 0s to left of the hex address until there is a length of 8
+    digits.push_back(remainder);
+  }
+
+  // seed digits with 0s if there are less than 8 digits already specified
+  for( int i = digits.size(); i < 8; i++ )
+  {
+    digits.push_back(0);
+  }
+
+  // build the hex value
+  for( int i = digits.size()-1; i >= 0; i-- )
+  {
+    // add a space between the fourth and fifth digits
+    if( hexAddress.length() == 4 )
+    {
+      hexAddress += " ";
+    }
+
+    hexAddress += to_string( digits[i] );
+  }
 
   // add the 0x to the left of the hex address
+  hexAddress = "0x" + hexAddress;
 
   // return the hex address
-
-
-  // temp
-  return to_string(memoryAddress);
+  return hexAddress;
 }
 
 
