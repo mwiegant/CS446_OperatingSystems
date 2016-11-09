@@ -17,7 +17,7 @@ ConfigFileParser::ConfigFileParser()
   memoryCycleTime = 0;
   systemMemory = 0;
 
-  memoryBlockSize = 0;
+  memoryBlockSize = 128;
   hardDriveQuantity = 1;
   printerQuantity = 1;
   keyboardQuantity = 1;
