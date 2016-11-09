@@ -36,6 +36,7 @@ int timePassed( struct timeval refTime )
 /*
  * Simulates memory allocation by returning a random number.
  */
+// todo - deprecate this function and remove it from my source code
 unsigned int allocateMemory( int totalMemory )
 {
   unsigned int address = 0;
@@ -397,6 +398,7 @@ unsigned int Process::processInstruction(char code, string descriptor, int runTi
 {
   unsigned int memory = 0;
   timeval referenceTime;
+  bool allocatedMemory = false;
 
   // get the time and store as a reference time
   gettimeofday( &referenceTime, NULL );
@@ -405,7 +407,9 @@ unsigned int Process::processInstruction(char code, string descriptor, int runTi
   if( code == 'M' && descriptor == "allocate")
   {
     // allocate memory
-    memory = allocateMemory( simulatorSettings.systemMemory );
+    resourceManager->RequestMemory(memory);
+
+    allocatedMemory = true;
   }
 
   // if the code is I or O, spawn a thread to do the waiting operation
@@ -422,6 +426,12 @@ unsigned int Process::processInstruction(char code, string descriptor, int runTi
   else
   {
     while( timePassed(referenceTime) < runTime );
+  }
+
+  // free up memory if any was allocated
+  if(allocatedMemory)
+  {
+    resourceManager->FreeMemory(memory);
   }
 
   // return
@@ -515,27 +525,21 @@ string Process::timeToString(int time)
  *
  *  i.e., something like this: 0x0012345  (where there is total memory of 1000000)
  */
-string Process::memoryToString(int _memoryAddress)
+string Process::memoryToString(int memoryAddress)
 {
-  // turn number values into strings
-  string totalMemory = to_string( simulatorSettings.systemMemory );
-  string memoryAddress = to_string( _memoryAddress );
+  // variable initialization
 
-  // determine how many zeros I'll need (ex: the '00' in 0x0012345)
-  int zeros = strlen(totalMemory.c_str()) - strlen(memoryAddress.c_str());
+  // convert memoryAddress to hex
 
-  string result = "0x";
+  // add 0s to left of the hex address until there is a length of 8
 
-  // add zeros to the result string
-  for( zeros; zeros > 0; zeros--)
-  {
-    result += "0";
-  }
+  // add the 0x to the left of the hex address
 
-  // finally, add the memory address to the result string
-  result += memoryAddress;
+  // return the hex address
 
-  return result;
+
+  // temp
+  return to_string(memoryAddress);
 }
 
 

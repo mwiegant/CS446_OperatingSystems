@@ -12,6 +12,7 @@
  */
 
 #include <cstdio>
+#include <vector>
 
 #include "Structures.h"
 
@@ -28,8 +29,8 @@ class ResourceManager
     bool RequestResource(int resourceType, int& resourceIndex);
     bool FreeResource(int resourceType, int resourceIndex);
 
-    bool RequestMemory(int& theMemoryLocation);
-    bool FreeMemory(int& theMemoryLocation);
+    bool RequestMemory(unsigned int& theMemoryLocation);
+    bool FreeMemory(unsigned int& theMemoryLocation);
 
   private:
 
@@ -49,6 +50,8 @@ class ResourceManager
     bool** mutexes;
 
     // memory management devices
+    vector<unsigned int> inUseMemory;
+
     int totalMemory;
     int memoryBlockSize;
     int totalMemoryBlocks;

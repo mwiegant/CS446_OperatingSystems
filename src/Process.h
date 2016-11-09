@@ -68,7 +68,7 @@ class Process
 
     // logging helper functions
     string timeToString(int time);
-    string memoryToString(int _memoryAddress);
+    string memoryToString(int memoryAddress);
 
     // for use with logging
     int processId;

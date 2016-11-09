@@ -100,17 +100,98 @@ bool ResourceManager::FreeResource(int resourceType, int resourceIndex)
 }
 
 
-bool ResourceManager::RequestMemory(int& theMemoryLocation)
+/*
+ * Looks through memory for the next available memory location from whichever block
+ * of memory is currently being cycled through.
+ */
+bool ResourceManager::RequestMemory(unsigned int& theMemoryLocation)
 {
+  bool acquiredUnusedMemory = false;
+  bool memoryIsInUse = false;
+  int memoryAddress = memoryBlockSize * currentMemoryBlock;
 
-  // temp
+  // error checking
+  if( !initialized )
+  {
+    printf("Error - tried to request memory access before resource manager was initialized.\n");
+    return false;
+  }
+
+  // keep trying to acquire a new, unused memory until one is found
+  do
+  {
+    // reset flags
+    memoryIsInUse = false;
+
+    // check if the memory address is already in-use
+    for( int i = 0; i < inUseMemory.size(); i++ )
+    {
+      if( inUseMemory[i] == memoryAddress )
+      {
+        memoryIsInUse = true;
+      }
+    }
+
+    // if the memory address is in-use, generate a new one
+    if( memoryIsInUse )
+    {
+      memoryAddress++;
+      continue;
+    }
+
+    // else, store this memory address and move to the next block for next time
+    inUseMemory.push_back(memoryAddress);
+    theMemoryLocation = memoryAddress;
+    acquiredUnusedMemory = true;
+    currentMemoryBlock++;
+
+    // reset the current memory block if it is now out of range
+    if( currentMemoryBlock >= totalMemoryBlocks )
+    {
+      currentMemoryBlock = 0;
+    }
+
+  } while( acquiredUnusedMemory == false );
+
   return true;
 }
 
-bool ResourceManager::FreeMemory(int& theMemoryLocation)
-{
 
-  // temp
+/*
+ * Attempts to return the given memory location back to available memory
+ * by removing it from the list of known in-use memory locations.
+ */
+bool ResourceManager::FreeMemory(unsigned int& theMemoryLocation)
+{
+  int index = -1;
+
+  // error checking
+  if( inUseMemory.size() == 0 )
+  {
+    printf("Error - tried to free memory when none was in use.\n");
+    return false;
+  }
+
+  // find the index of the memory location
+  for( int i = 0; i < inUseMemory.size(); i++ )
+  {
+    if( inUseMemory[i] == theMemoryLocation)
+    {
+      index = i;
+      break;
+    }
+  }
+
+  // error checking - element not found
+  if( index == -1 )
+  {
+    printf("Error - could not find the specified memory location in in-use memory.\n");
+    return false;
+  }
+
+  // remove the element specified by the memory location
+  inUseMemory.erase( inUseMemory.begin() + index );
+
   return true;
 }
 
