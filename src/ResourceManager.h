@@ -14,6 +14,8 @@
 #include <cstdio>
 #include <vector>
 
+#include <iostream>
+
 #include "Structures.h"
 
 using namespace std;

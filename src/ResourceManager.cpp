@@ -15,17 +15,24 @@ ResourceManager::~ResourceManager()
 bool ResourceManager::Initialize(int hddQuantity, int printerQuantity, int keyboardQuantity,
                                  int totalMemory, int memoryBlockSize)
 {
+
+  cout << "in resourceManager init, top of init" << endl;
+
   // initialize quantified resources
   if( !InitializeQuantities( hddQuantity, printerQuantity, keyboardQuantity ) )
   {
     return false;
   }
 
+  cout << "in resourceManager init, after init quantities" << endl;
+
   // initialize memory resources
   if( !InitializeMemory( totalMemory, memoryBlockSize ) )
   {
     return false;
   }
+
+  cout << "in resourceManager init, bottom of init" << endl;
 
   return true;
 }
