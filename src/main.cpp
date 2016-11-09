@@ -18,6 +18,7 @@ int main(int argc, char **argv)
     return -1;
   }
 
+  cout << "about to call simulation initialize" << endl;
 
   // initialize the simulation
   if( !simulation->Initialize(argv[1]) )
@@ -25,6 +26,8 @@ int main(int argc, char **argv)
     cout << "Error - Failed to initialize the simulation." << endl;
     return -2;
   }
+
+  cout << "got past simulation initialize" << endl;
 
   // process metadata instructions
   simulation->Run();
