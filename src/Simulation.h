@@ -18,8 +18,6 @@
 #include <vector>
 #include <queue>
 
-#include <iostream>
-
 #include "Structures.h"
 
 #include "ConfigFileParser.h"

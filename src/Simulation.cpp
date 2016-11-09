@@ -46,8 +46,6 @@ bool Simulation::Initialize(char filePath[])
   ConfigFileParser* configFileParser = new ConfigFileParser();
   MetaFileParser* metaFileParser = new MetaFileParser();
 
-  cout << "in simulation init, top of function" << endl;
-
   // read in the config file
   if( !configFileParser->readInConfig(filePath) )
   {
@@ -105,8 +103,6 @@ bool Simulation::Initialize(char filePath[])
 
   configFileParser = NULL;
   metaFileParser = NULL;
-
-  logger->log("test..test..test");
 
   return true;
 }
