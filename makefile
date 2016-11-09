@@ -8,11 +8,11 @@ CC = g++
 DEBUG = -g
 CFLAGS = -c -std=c++11 -pthread
 LFLAGS = -std=c++11 -pthread
-SOURCE = ../src/
-# SOURCE = src/
+# SOURCE = ../src/
+SOURCE = src/
 
 sim02 : $(SOURCE)main.cpp Logger.o Simulation.o Process.o ResourceManager.o MetaFileParser.o ConfigFileParser.o FileParser.o
-	$(CC) $(LFLAGS) $(SOURCE)main.cpp Logger.o Simulation.o Process.o ResourceManager.o MetaFileParser.o ConfigFileParser.o FileParser.o -o simO2
+	$(CC) $(LFLAGS) $(SOURCE)main.cpp Logger.o Simulation.o Process.o ResourceManager.o MetaFileParser.o ConfigFileParser.o FileParser.o -o simO3
 
 Logger.o : $(SOURCE)Logger.cpp
 	$(CC) $(CFLAGS) $(SOURCE)Logger.cpp
@@ -36,5 +36,5 @@ FileParser.o : $(SOURCE)FileParser.cpp
 	$(CC) $(CFLAGS) $(SOURCE)FileParser.cpp
 
 clean:
-	\rm *.o simO2
+	\rm *.o simO3
 
