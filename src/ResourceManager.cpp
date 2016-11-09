@@ -25,6 +25,9 @@ bool ResourceManager::Initialize(int hddQuantity, int printerQuantity, int keybo
   }
 
   cout << "in resourceManager init, after init quantities" << endl;
+  cout << "totalMemory: " << totalMemory << endl;
+  cout << "memoryBlockSize: " << memoryBlockSize << endl;
+
 
   // initialize memory resources
   if( !InitializeMemory( totalMemory, memoryBlockSize ) )
