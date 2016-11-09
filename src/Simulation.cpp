@@ -46,6 +46,8 @@ bool Simulation::Initialize(char filePath[])
   ConfigFileParser* configFileParser = new ConfigFileParser();
   MetaFileParser* metaFileParser = new MetaFileParser();
 
+  cout << "in simulation init, top of function" << endl;
+
   // read in the config file
   if( !configFileParser->readInConfig(filePath) )
   {
@@ -75,6 +77,8 @@ bool Simulation::Initialize(char filePath[])
     return false;
   }
 
+  cout << "in simulation init, before init resourceManager" << endl;
+
   // initialize the resource manager
   if( !resourceManager->Initialize(settings.hardDriveQuantity, settings.printerQuantity, settings.keyboardQuantity,
                                     settings.systemMemory, settings.memoryBlockSize) )
@@ -82,6 +86,8 @@ bool Simulation::Initialize(char filePath[])
     printf("Error - failed to iniitialize the resource manager.\n");
     return false;
   }
+
+  cout << "in simulation init, after init resourceManager" << endl;
 
   // log the configuration of the simulation
   logSimulationSettings();
