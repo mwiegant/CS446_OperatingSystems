@@ -14,7 +14,7 @@ Simulation::Simulation()
   settings.systemMemory = 0;
 
   // new settings, since assignment 3
-  settings.memoryBlockSize = 0;   //todo - is a default value of 0 going to cause any problems with assigning memory in Processes?
+  settings.memoryBlockSize = 128;
   settings.hardDriveQuantity = 1;
   settings.printerQuantity = 1;
   settings.keyboardQuantity = 1;
