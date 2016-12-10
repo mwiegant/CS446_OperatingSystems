@@ -64,11 +64,6 @@ bool ConfigFileParser::readInConfig(char filePath[])
 
 
 /*
- * Given a line of data from the config data, splits the line up and passes
- * the split up line to a final processing function to store data into the Simulation
- */
-
-/*
  * Given a line of data from the config data, splits the line up at every space, and sends
  * the first, second-to-last, and last tokens from the split-up line to the processData() function,
  * which looks at those tokens to determine which setting is being set in that line.
@@ -93,12 +88,15 @@ void ConfigFileParser::extractData(string fileData)
  * Given two labels and some data, determines which part of the Simulation to update
  * with the new data.
  *
+ * Note that logic which checks the value of BOTH labels should go above all logic
+ * that checks the value of just ONE label.
+ *
  * Ex:
  * Hard drive quantity: 2
  *
- * label1: Hard
- * label2: quantity
- * data:   2
+ * label1: Hard           (FIRST WORD)
+ * label2: quantity       (LAST WORD before the ':')
+ * data:   2              (VALUE after the ":")
  */
 void ConfigFileParser::processData(string label1, string label2, string data)
 {
@@ -132,6 +130,12 @@ void ConfigFileParser::processData(string label1, string label2, string data)
   else if( label1 == "Printer" && label2 == "quantity:")
   {
     printerQuantity = stoi(data);
+  }
+
+  // process quantum number
+  else if( label1 == "Processor" && label2 == "Number:")
+  {
+    quantumNumber = stoi(data);
   }
 
   // process processor cycle time
@@ -176,6 +180,12 @@ void ConfigFileParser::processData(string label1, string label2, string data)
     systemMemory = stoi(data);
   }
 
+  // process scheduling code
+  else if( label1 == "CPU")
+  {
+    cpuSchedulingCode = data;
+  }
+
   // process where to log
   else if( label1 == "Log:")
   {
@@ -199,8 +209,6 @@ void ConfigFileParser::processData(string label1, string label2, string data)
   // process log file path
   else if( label1 == "Log")
   {
-    printf("processing log file path, data: %s\n", data.c_str());
-
     // extract the filename from the filepath
     splitString(data, '/', logfilePathTokens);
 
@@ -225,9 +233,10 @@ void ConfigFileParser::getMetaFilePath(char metaFilePath[])
   strcpy( metaFilePath, this->mdf_filePath );
 }
 
-void ConfigFileParser::getSchedulingCode(string& schedulingCode)
+void ConfigFileParser::getSchedulingData(string& schedulingCode, int& quantumNumber)
 {
   schedulingCode = this->cpuSchedulingCode;
+  quantumNumber = this->quantumNumber;
 }
 
 void ConfigFileParser::getProcessorCycleTime(int& cycleTime)

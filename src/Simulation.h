@@ -52,6 +52,7 @@ class Simulation
     float osVersion;
     char mdf_filePath[50];
     string cpuSchedulingCode;
+    int defaultQuantumNumber;
 
     // Processing Times
     SimulatorSettings settings;

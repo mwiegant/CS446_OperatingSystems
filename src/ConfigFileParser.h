@@ -28,7 +28,7 @@ class ConfigFileParser: public FileParser
     // getters
     void getOSVersion(float& osVersion);
     void getMetaFilePath(char metaFilePath[]);
-    void getSchedulingCode(string& schedulingCode);
+    void getSchedulingData(string& schedulingCode, int& quantumNumber);
     void getProcessorCycleTime(int& cycleTime);
     void getMonitorCycleTime(int& cycleTime);
     void getHardDriveCycleTime(int& cycleTime);
@@ -48,7 +48,6 @@ class ConfigFileParser: public FileParser
     // Configuration Information
     float osVersion;
     char mdf_filePath[50];
-    string cpuSchedulingCode;
 
     // Processing Times
     int processorCycleTime;
@@ -64,7 +63,9 @@ class ConfigFileParser: public FileParser
     int hardDriveQuantity;
     int printerQuantity;
 
-    //
+    // Scheduling Information
+    int quantumNumber;
+    string cpuSchedulingCode;
 
     // Log File
     bool logToMonitor;

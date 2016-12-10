@@ -4,6 +4,7 @@ Simulation::Simulation()
 {
   osVersion = 0.0f;
   cpuSchedulingCode = "";
+  defaultQuantumNumber = 1;
 
   settings.processorCycleTime = 0;
   settings.monitorDisplayTime = 0;
@@ -54,7 +55,7 @@ bool Simulation::Initialize(char filePath[])
   // get values from the config file parser
   configFileParser->getOSVersion( osVersion );
   configFileParser->getMetaFilePath( mdf_filePath );
-  configFileParser->getSchedulingCode( cpuSchedulingCode );
+  configFileParser->getSchedulingData( cpuSchedulingCode, defaultQuantumNumber );
   configFileParser->getProcessorCycleTime( settings.processorCycleTime );
   configFileParser->getMonitorCycleTime( settings.monitorDisplayTime );
   configFileParser->getHardDriveCycleTime( settings.hardDriveCycleTime );
@@ -120,7 +121,9 @@ bool Simulation::Run()
   // divide the master queue of instructions into smaller queues inside processes
   createProcesses();
 
-  logger->log("Meta-Data Metrics");
+  logger->log("----------------------");
+  logger->log("-- Meta-Data Metrics");
+  logger->log("----------------------");
 
   // run through each process
   while( readyQueue.size() > 0 )
@@ -149,45 +152,9 @@ void Simulation::logSimulationSettings()
   string message;
 
   // begin logging to the file
-  logger->log("Configuration File Data");
-
-  // log system memory
-  message = "System memory = " + to_string(settings.systemMemory) + " (kbytes)";
-  logger->log(message);
-
-  // log memory block size
-  message = "Memory block size = " + to_string(settings.memoryBlockSize) + " (kbytes)";
-  logger->log(message);
-
-  // log processor settings
-  message = "Processor = " + to_string(settings.processorCycleTime) + " ms/cycle";
-  logger->log(message);
-
-  // log monitor settings
-  message = "Monitor = " + to_string(settings.monitorDisplayTime) + " ms/cycle";
-  logger->log(message);
-
-  // log hard drive settings
-  message = "Hard Drive = " + to_string(settings.hardDriveCycleTime) + " ms/cycle";
-  logger->log(message);
-
-  // log printer settings
-  message = "Printer = " + to_string(settings.printerCycleTime) + " ms/cycle";
-  logger->log(message);
-
-  // log keyboard settings
-  message = "Keyboard = " + to_string(settings.keyboardCycleTime) + " ms/cycle";
-  logger->log(message);
-
-  // log memory settings
-  message = "Memory = " + to_string(settings.memoryCycleTime) + " ms/cycle";
-  logger->log(message);
-
-  message = "Hard Drives: " + to_string(settings.hardDriveQuantity);
-  logger->log(message);
-
-  message = "Printers: " + to_string(settings.printerQuantity);
-  logger->log(message);
+  logger->log("-----------------------------");
+  logger->log("-- Configuration File Data");
+  logger->log("-----------------------------");
 
   // setup the message to log the settings on where the simulation is logging
   message = "Logged to: ";
@@ -205,7 +172,48 @@ void Simulation::logSimulationSettings()
     message += logFilePath;
   }
 
-  // finally, log where the simulation is logging
+  // log where the simulation is logging
+  logger->log(message);
+
+  // log scheduling data
+  message = "Scheduling Algorithm: " + cpuSchedulingCode;
+  logger->log(message);
+
+  message = "Default Quantum Number: " + to_string(defaultQuantumNumber);
+  logger->log(message);
+
+  // log device quantities
+  message = "Hard Drives: " + to_string(settings.hardDriveQuantity);
+  logger->log(message);
+
+  message = "Printers: " + to_string(settings.printerQuantity);
+  logger->log(message);
+
+  // log system memory
+  message = "System memory = " + to_string(settings.systemMemory) + " (kbytes)";
+  logger->log(message);
+
+  // log memory block size
+  message = "Memory block size = " + to_string(settings.memoryBlockSize) + " (kbytes)";
+  logger->log(message);
+
+  // log cycle times
+  message = "Processor = " + to_string(settings.processorCycleTime) + " ms/cycle";
+  logger->log(message);
+
+  message = "Monitor = " + to_string(settings.monitorDisplayTime) + " ms/cycle";
+  logger->log(message);
+
+  message = "Hard Drive = " + to_string(settings.hardDriveCycleTime) + " ms/cycle";
+  logger->log(message);
+
+  message = "Printer = " + to_string(settings.printerCycleTime) + " ms/cycle";
+  logger->log(message);
+
+  message = "Keyboard = " + to_string(settings.keyboardCycleTime) + " ms/cycle";
+  logger->log(message);
+
+  message = "Memory = " + to_string(settings.memoryCycleTime) + " ms/cycle";
   logger->log(message);
 
   // log an empty line
@@ -213,7 +221,9 @@ void Simulation::logSimulationSettings()
 }
 
 
-
+/*
+ * Separates the master-list of meta-data instructions into separate processes.
+ */
 void Simulation::createProcesses()
 {
   queue<Instruction> processQueue;
