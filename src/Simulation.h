@@ -59,7 +59,6 @@ class Simulation
     // Log File
     bool logToMonitor;
     bool logToFile;
-    string logFileName;
     string logFilePath;
 
     // Logging Object

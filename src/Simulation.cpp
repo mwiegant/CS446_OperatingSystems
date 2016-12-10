@@ -21,7 +21,6 @@ Simulation::Simulation()
 
   logToMonitor = false;
   logToFile = false;
-  logFileName = "";
   logFilePath = "";
 
   logger = new Logger();
@@ -64,7 +63,7 @@ bool Simulation::Initialize(char filePath[])
   configFileParser->getKeyboardCycleTime( settings.keyboardCycleTime );
   configFileParser->getMemoryCycleTime( settings.memoryCycleTime );
   configFileParser->getSystemMemory( settings.systemMemory );
-  configFileParser->getLoggingInformation( logToMonitor, logToFile, logFileName, logFilePath);
+  configFileParser->getLoggingInformation( logToMonitor, logToFile, logFilePath);
   configFileParser->getMemoryBlockSize( settings.memoryBlockSize );
   configFileParser->getDeviceQuantities( settings.hardDriveQuantity, settings.printerQuantity, settings.keyboardQuantity);
 
@@ -199,8 +198,7 @@ void Simulation::logSimulationSettings()
 
   if(logToMonitor && logToFile)
   {
-//    message += "monitor and " + logFileName;
-    message += "monitor";
+    message += "monitor and " + logFilePath;
   }
   else if(logToMonitor)
   {
@@ -208,7 +206,7 @@ void Simulation::logSimulationSettings()
   }
   else if(logToFile)
   {
-    message += logFileName;
+    message += logFilePath;
   }
 
   // finally, log where the simulation is logging

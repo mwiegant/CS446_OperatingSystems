@@ -36,7 +36,7 @@ class ConfigFileParser: public FileParser
     void getKeyboardCycleTime(int& cycleTime);
     void getMemoryCycleTime(int& cycleTime);
     void getSystemMemory(int& systemMemory);
-    void getLoggingInformation(bool& logToMonitor, bool& logToFile, string& logFileName, string& logFilePath);
+    void getLoggingInformation(bool& logToMonitor, bool& logToFile, string& logFilePath);
     void getMemoryBlockSize(int& blockSize);
     void getDeviceQuantities(int& numHardDrives, int& numPrinters, int& numKeyboards);
 
@@ -68,7 +68,6 @@ class ConfigFileParser: public FileParser
     // Log File
     bool logToMonitor;
     bool logToFile;
-    string logFileName;
     string logFilePath;
 };
 

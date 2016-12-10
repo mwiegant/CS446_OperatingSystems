@@ -24,7 +24,6 @@ ConfigFileParser::ConfigFileParser()
 
   logToMonitor = false;
   logToFile = false;
-  logFileName = "";
   logFilePath = "";
 }
 
@@ -122,7 +121,6 @@ void ConfigFileParser::processData(string label1, string label2, string data)
   else if( label1 == "Memory" && label2 == "(kbytes):")
   {
     memoryBlockSize = stoi(data);
-    printf("inside memory block size statement in configFileParser");
   }
 
   // process hard drive quantity
@@ -208,11 +206,12 @@ void ConfigFileParser::processData(string label1, string label2, string data)
   // process log file path
   else if( label1 == "Log")
   {
+    printf("processing log file path, data: %s\n", data.c_str());
+
     // extract the filename from the filepath
     splitString(data, '/', logfilePathTokens);
 
     logFilePath = data;
-    logFileName = logfilePathTokens[1];
   }
 
 
@@ -273,11 +272,10 @@ void ConfigFileParser::getSystemMemory(int& systemMemory)
   systemMemory = this->systemMemory;
 }
 
-void ConfigFileParser::getLoggingInformation(bool& logToMonitor, bool& logToFile, string& logFileName, string& logFilePath)
+void ConfigFileParser::getLoggingInformation(bool& logToMonitor, bool& logToFile, string& logFilePath)
 {
   logToMonitor = this->logToMonitor;
   logToFile = this->logToFile;
-  logFileName = this->logFileName;
   logFilePath = this->logFilePath;
 }
 

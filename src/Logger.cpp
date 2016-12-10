@@ -32,14 +32,7 @@ bool Logger::Initialize(bool logToMonitor, bool logToFile, string filePath, bool
     fileOutStream.clear();
     fileOutStream.open( this->filePath );
 
-//    if( fileOutStream.good() )
-//    {
-      fileOutStream << "asdf";
-//    }
-//    else
-//    {
-//      printf("Warning - failed to clear the file\n");
-//    }
+    fileOutStream << "";
 
     fileOutStream.close();
   }
