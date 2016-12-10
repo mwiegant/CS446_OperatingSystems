@@ -33,9 +33,6 @@ using namespace std;
 // for use in waiting for a set time
 int timePassed( struct timeval referenceTime );
 
-// used for memory allocation instructions
-unsigned int allocateMemory( int totalMemory );
-
 // the function that threads will run
 void* threadRunner(void* _waitTime);
 
@@ -79,6 +76,10 @@ class Process
 
     // process id number
     int pid;
+
+    // all memory used by this process
+    // the 0-th element indicates how many memory addresses are stored
+    int inUseMemory[100];
 
     // the state of this process
     ProcessControlBlock processState;

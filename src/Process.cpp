@@ -34,24 +34,6 @@ int timePassed( struct timeval refTime )
 
 
 /*
- * Simulates memory allocation by returning a random number.
- */
-// todo - deprecate this function and remove it from my source code
-unsigned int allocateMemory( int totalMemory )
-{
-  unsigned int address = 0;
-
-  srand(time(NULL));
-
-  if( totalMemory > 0 )
-  {
-    address = rand() % totalMemory;
-  }
-  return address;
-}
-
-
-/*
  * Meant to be used by threads.
  *
  * Takes in a wait time, and doesn't exit from the thread
@@ -89,6 +71,10 @@ Process::Process(int processId, SimulatorSettings simulatorSettings, Logger* log
   this->resourceManager = resourceManager;
   this->instructionsQueue = instructionsQueue;
 
+  // the 0-th index indicates how many memory addresses are in use
+  // by default, 0 memory addresses are in use
+  inUseMemory[0] = 0;
+
   // set default state to ready
   processState = READY;
 }
@@ -111,6 +97,7 @@ void Process::Run( timeval startTime )
   bool stillRunning;
   int cycles, timePerCycle, runTime;
   unsigned int memory = 0;
+  unsigned int memoryLocation = 0;
 
   // assign the start time
   referenceTime = startTime;
@@ -157,8 +144,22 @@ void Process::Run( timeval startTime )
 
   }
 
-  // assume if all instructions have been read that this process is terminating
-  processState = TERMINATED;
+  // terminate the process if it has no instructions left to run
+  if( instructionsQueue.empty() )
+  {
+
+    // free all memory that was in use
+    for( int i = inUseMemory[0]; i > 0; i-- )
+    {
+      memoryLocation = inUseMemory[i];
+
+      resourceManager->FreeMemory(memoryLocation);
+    }
+
+    // update the process state
+    processState = TERMINATED;
+  }
+
 }
 
 
@@ -279,7 +280,6 @@ void Process::logInstructionMessage(char code, string descriptor, bool stillRunn
         if(stillRunning)  message += "Process " + to_string(processId) + ": start hard drive input on HDD " + to_string(resourceIndex);
         else              message += "Process " + to_string(processId) + ": end hard drive input";
       }
-      // todo - is there an input monitor command???
       else if( descriptor == "monitor")
       {
         if(stillRunning)  message += "Process " + to_string(processId) + ": start monitor input";
@@ -398,7 +398,7 @@ unsigned int Process::processInstruction(char code, string descriptor, int runTi
 {
   unsigned int memory = 0;
   timeval referenceTime;
-  bool allocatedMemory = false;
+  int& numberOfMemoryAddresses = inUseMemory[0];
 
   // get the time and store as a reference time
   gettimeofday( &referenceTime, NULL );
@@ -409,8 +409,15 @@ unsigned int Process::processInstruction(char code, string descriptor, int runTi
     // allocate memory
     resourceManager->RequestMemory(memory);
 
-    allocatedMemory = true;
+    // update how many memory addresses are in use
+    numberOfMemoryAddresses++;
+
+    // record that this memory address is now in use
+    inUseMemory[numberOfMemoryAddresses] = memory;
+
   }
+
+  // todo - add logic here for M(cache) operation
 
   // if the code is I or O, spawn a thread to do the waiting operation
   if( code == 'I' || code == 'O')
@@ -426,12 +433,6 @@ unsigned int Process::processInstruction(char code, string descriptor, int runTi
   else
   {
     while( timePassed(referenceTime) < runTime );
-  }
-
-  // free up memory if any was allocated
-  if(allocatedMemory)
-  {
-    resourceManager->FreeMemory(memory);
   }
 
   // return

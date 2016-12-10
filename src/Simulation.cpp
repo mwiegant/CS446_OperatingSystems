@@ -257,6 +257,8 @@ void Simulation::createProcesses()
 
       readyQueue.push( *process );
 
+      processId++;
+
       // empty the process queue, for the next process
       while( !processQueue.empty() )
       {
