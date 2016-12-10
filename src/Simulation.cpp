@@ -17,7 +17,6 @@ Simulation::Simulation()
   settings.memoryBlockSize = 128;
   settings.hardDriveQuantity = 1;
   settings.printerQuantity = 1;
-  settings.keyboardQuantity = 1;
 
   logToMonitor = false;
   logToFile = false;
@@ -65,7 +64,7 @@ bool Simulation::Initialize(char filePath[])
   configFileParser->getSystemMemory( settings.systemMemory );
   configFileParser->getLoggingInformation( logToMonitor, logToFile, logFilePath);
   configFileParser->getMemoryBlockSize( settings.memoryBlockSize );
-  configFileParser->getDeviceQuantities( settings.hardDriveQuantity, settings.printerQuantity, settings.keyboardQuantity);
+  configFileParser->getDeviceQuantities( settings.hardDriveQuantity, settings.printerQuantity);
 
   // initialize the logger
   if( !logger->Initialize(logToMonitor, logToFile, logFilePath, true) )
@@ -75,7 +74,7 @@ bool Simulation::Initialize(char filePath[])
   }
 
   // initialize the resource manager
-  if( !resourceManager->Initialize(settings.hardDriveQuantity, settings.printerQuantity, settings.keyboardQuantity,
+  if( !resourceManager->Initialize(settings.hardDriveQuantity, settings.printerQuantity,
                                     settings.systemMemory, settings.memoryBlockSize) )
   {
     printf("Error - failed to iniitialize the resource manager.\n");
@@ -188,9 +187,6 @@ void Simulation::logSimulationSettings()
   logger->log(message);
 
   message = "Printers: " + to_string(settings.printerQuantity);
-  logger->log(message);
-
-  message = "Keyboards: " + to_string(settings.keyboardQuantity);
   logger->log(message);
 
   // setup the message to log the settings on where the simulation is logging

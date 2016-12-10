@@ -26,7 +26,7 @@ class ResourceManager
     ResourceManager(int uniqueResourceTypes);
     ~ResourceManager();
 
-    bool Initialize(int hddQuantity, int printerQuantity, int keyboardQuantity, int totalMemory, int memoryBlockSize);
+    bool Initialize(int hddQuantity, int printerQuantity, int totalMemory, int memoryBlockSize);
 
     bool RequestResource(int resourceType, int& resourceIndex);
     bool FreeResource(int resourceType, int resourceIndex);
@@ -37,7 +37,7 @@ class ResourceManager
   private:
 
     // initialize particular resources
-    bool InitializeQuantities(int hddQuantity, int printerQuantity, int keyboardQuantity);
+    bool InitializeQuantities(int hddQuantity, int printerQuantity);
     bool InitializeMemory(int totalMemory, int memoryBlockSize);
 
     // flag to ensure initialize was called

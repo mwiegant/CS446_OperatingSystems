@@ -12,12 +12,11 @@ ResourceManager::~ResourceManager()
 
 }
 
-bool ResourceManager::Initialize(int hddQuantity, int printerQuantity, int keyboardQuantity,
-                                 int totalMemory, int memoryBlockSize)
+bool ResourceManager::Initialize(int hddQuantity, int printerQuantity, int totalMemory, int memoryBlockSize)
 {
 
   // initialize quantified resources
-  if( !InitializeQuantities( hddQuantity, printerQuantity, keyboardQuantity ) )
+  if( !InitializeQuantities( hddQuantity, printerQuantity ) )
   {
     return false;
   }
@@ -201,7 +200,7 @@ bool ResourceManager::FreeMemory(unsigned int& theMemoryLocation)
  * Handles set up of semaphores and mutexes for quantified resources such as hard drives
  * or printers.
  */
-bool ResourceManager::InitializeQuantities(int hddQuantity, int printerQuantity, int keyboardQuantity)
+bool ResourceManager::InitializeQuantities(int hddQuantity, int printerQuantity)
 {
   // initialize semaphores and maximum resource amounts
   semaphores = new int[numResourceTypes];
@@ -209,11 +208,9 @@ bool ResourceManager::InitializeQuantities(int hddQuantity, int printerQuantity,
 
   semaphores[HDD] = hddQuantity;
   semaphores[PRINTER] = printerQuantity;
-  semaphores[KEYBOARD] = keyboardQuantity;
 
   maximumResources[HDD] = hddQuantity;
   maximumResources[PRINTER] = printerQuantity;
-  maximumResources[KEYBOARD] = keyboardQuantity;
 
   // initialize mutexes
   mutexes = new bool*[numResourceTypes];
@@ -221,7 +218,6 @@ bool ResourceManager::InitializeQuantities(int hddQuantity, int printerQuantity,
   // initialize the arrays of pointers that mutexes point to
   mutexes[HDD] = new bool[hddQuantity];
   mutexes[PRINTER] = new bool[printerQuantity];
-  mutexes[KEYBOARD] = new bool[keyboardQuantity];
 
   // set default values of true to every mutex flag
   for(int i = 0; i < hddQuantity; i++)
@@ -232,11 +228,6 @@ bool ResourceManager::InitializeQuantities(int hddQuantity, int printerQuantity,
   for(int i = 0; i < printerQuantity; i++)
   {
     mutexes[PRINTER][i] = true;
-  }
-
-  for(int i = 0; i < keyboardQuantity; i++)
-  {
-    mutexes[KEYBOARD][i] = true;
   }
 
   initialized = true;

@@ -38,7 +38,7 @@ class ConfigFileParser: public FileParser
     void getSystemMemory(int& systemMemory);
     void getLoggingInformation(bool& logToMonitor, bool& logToFile, string& logFilePath);
     void getMemoryBlockSize(int& blockSize);
-    void getDeviceQuantities(int& numHardDrives, int& numPrinters, int& numKeyboards);
+    void getDeviceQuantities(int& numHardDrives, int& numPrinters);
 
   private:
     // for extracting and parsing in the config file
@@ -63,7 +63,8 @@ class ConfigFileParser: public FileParser
     int memoryBlockSize;
     int hardDriveQuantity;
     int printerQuantity;
-    int keyboardQuantity;
+
+    //
 
     // Log File
     bool logToMonitor;

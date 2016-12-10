@@ -287,7 +287,7 @@ void Process::logInstructionMessage(char code, string descriptor, bool stillRunn
       }
       else if( descriptor == "keyboard")
       {
-        if(stillRunning)  message += "Process " + to_string(processId) + ": start keyboard input on KEYBOARD " + to_string(resourceIndex);
+        if(stillRunning)  message += "Process " + to_string(processId) + ": start keyboard input";
         else              message += "Process " + to_string(processId) + ": end keyboard input";
       }
       else
@@ -453,10 +453,6 @@ bool Process::acquireResources(string descriptor)
   {
     return resourceManager->RequestResource(PRINTER, resourceIndex);
   }
-  else if(descriptor == "keyboard")
-  {
-    return resourceManager->RequestResource(KEYBOARD, resourceIndex);
-  }
   else
   {
     return false;
@@ -477,10 +473,6 @@ bool Process::returnResources(string descriptor)
   else if(descriptor == "printer")
   {
     return resourceManager->FreeResource(PRINTER, resourceIndex);
-  }
-  else if(descriptor == "keyboard")
-  {
-    return resourceManager->FreeResource(KEYBOARD, resourceIndex);
   }
   else
   {

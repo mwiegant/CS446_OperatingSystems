@@ -20,7 +20,6 @@ ConfigFileParser::ConfigFileParser()
   memoryBlockSize = 128;
   hardDriveQuantity = 1;
   printerQuantity = 1;
-  keyboardQuantity = 1;
 
   logToMonitor = false;
   logToFile = false;
@@ -133,12 +132,6 @@ void ConfigFileParser::processData(string label1, string label2, string data)
   else if( label1 == "Printer" && label2 == "quantity:")
   {
     printerQuantity = stoi(data);
-  }
-
-  // process keyboard quantity
-  else if( label1 == "Keyboard" && label2 == "quantity:")
-  {
-    keyboardQuantity = stoi(data);
   }
 
   // process processor cycle time
@@ -284,11 +277,10 @@ void ConfigFileParser::getMemoryBlockSize(int& blockSize)
   blockSize = memoryBlockSize;
 }
 
-void ConfigFileParser::getDeviceQuantities(int& numHardDrives, int& numPrinters, int& numKeyboards)
+void ConfigFileParser::getDeviceQuantities(int& numHardDrives, int& numPrinters)
 {
   numHardDrives = hardDriveQuantity;
   numPrinters = printerQuantity;
-  numKeyboards = keyboardQuantity;
 }
 
 
