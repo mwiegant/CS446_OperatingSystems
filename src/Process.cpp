@@ -62,10 +62,12 @@ void* threadRunner(void* _waitTime)
 /*
  * Constructor
  */
-Process::Process(int processId, SimulatorSettings simulatorSettings, Logger* logger, ResourceManager* resourceManager,
-                 queue<Instruction> instructionsQueue )
+Process::Process(int processId, int defaultQuantumNumber, SimulatorSettings simulatorSettings, Logger* logger,
+                 ResourceManager* resourceManager, queue<Instruction> instructionsQueue )
 {
   this->processId = processId;
+  this->quantumNumber = defaultQuantumNumber;
+  this->processQuantumNumber = defaultQuantumNumber;
   this->simulatorSettings = simulatorSettings;
   this->logger = logger;
   this->resourceManager = resourceManager;
@@ -74,6 +76,9 @@ Process::Process(int processId, SimulatorSettings simulatorSettings, Logger* log
   // the 0-th index indicates how many memory addresses are in use
   // by default, 0 memory addresses are in use
   inUseMemory[0] = 0;
+
+  // setting this ensures that a new instruction is pulled from the instructionsQueue initially
+  currentInstruction.cycles = 0;
 
   // set default state to ready
   processState = READY;
@@ -93,9 +98,10 @@ void Process::Run( timeval startTime )
 {
   char code;
   string descriptor;
-  Instruction instruction;
   bool stillRunning;
+  bool cyclesRemaining;
   int cycles, timePerCycle, runTime;
+  int quantum;
   unsigned int memory = 0;
   unsigned int memoryLocation = 0;
 
@@ -111,36 +117,74 @@ void Process::Run( timeval startTime )
     // set running flag
     stillRunning = true;
 
-    // get the next instruction
-    instruction = instructionsQueue.front();
-    instructionsQueue.pop();
+    // fetch the next instruction if this one has no cycles left to run
+    if(currentInstruction.cycles <= 0)
+    {
+      currentInstruction = instructionsQueue.front();
+      instructionsQueue.pop();
+      newInstruction = true;
+    }
+    else
+    {
+      newInstruction = false;
+    }
+
+//    printf("cycles remaining: %d\n", currentInstruction.cycles);
 
     // update parameters with the values stored in the instruction
-    code = instruction.code;
-    descriptor = instruction.descriptor;
-    cycles = instruction.cycles;
+    code = currentInstruction.code;
+    descriptor = currentInstruction.descriptor;
+    cycles = currentInstruction.cycles;
 
-    // get the time per cycle for the code-descriptor combination
+    // determine which quantum value to use
+    if( code == 'P' )
+    {
+      quantum = processQuantumNumber;
+    }
+    else
+    {
+      quantum = quantumNumber;
+    }
+
+    // determine how many cycles to run for
+    if( cycles > quantum )
+    {
+      cycles = quantum;
+      cyclesRemaining = true;
+    }
+    else
+    {
+      cyclesRemaining = false;
+    }
+
+    // decrement how many cycles are left to run for this instruction
+    currentInstruction.cycles -= quantum;
+
+    // compute how long to run this instruction for
     timePerCycle = getCycleTime(code, descriptor);
-
-    // compute the total time to process the instruction
     runTime = cycles * timePerCycle * 1000;
 
-    // acquire any resources that may be needed for this instruction
-    acquireResources(descriptor);
+    // acquire resources if this is a new instruction
+    if( newInstruction )
+    {
+      acquireResources(descriptor);
+    }
 
     // log a message about this instruction
-    logInstructionMessage(code, descriptor, stillRunning, memory);
+    logInstructionMessage(code, descriptor, stillRunning, cyclesRemaining, memory);
 
-    // process the instruction elsewhere
+    // process the instruction
     memory = processInstruction(code, descriptor, runTime);
 
-    // free up any resources that may have been used for this instruction
-    returnResources(descriptor);
+    // free resources used if this instruction is now completed
+    if( !cyclesRemaining )
+    {
+      returnResources(descriptor);
+    }
 
     // log a final message about this instruction
     stillRunning = false;
-    logInstructionMessage(code, descriptor, stillRunning, memory);
+    logInstructionMessage(code, descriptor, stillRunning, cyclesRemaining, memory);
 
   }
 
@@ -240,14 +284,13 @@ int Process::getCycleTime(char code, string descriptor)
  *  - the type of instruction, and
  *  - whether the instruction is about to run or just finished running
  */
-void Process::logInstructionMessage(char code, string descriptor, bool stillRunning, unsigned int memory)
+void Process::logInstructionMessage(char code, string descriptor, bool stillRunning, bool cyclesRemaining, unsigned int memory)
 {
   string message;
   bool badInstruction = false;
 
   // get the timestamp
   message = timeToString( timePassed(referenceTime) ) + " - ";
-
 
   // determine which message to log,
   // based first on the code/descripter, and second on if it's running still or not
@@ -373,6 +416,13 @@ void Process::logInstructionMessage(char code, string descriptor, bool stillRunn
       break;
   }
 
+  // check if this instruction is being interrupted, and report it
+  if( !stillRunning && cyclesRemaining)
+  {
+    message = timeToString( timePassed(referenceTime) ) + " - ";
+    message += "Process " + to_string(processId) + ": interrupting the currently processing action.";
+  }
+
   // check for bad instruction
   if( badInstruction )
   {
@@ -396,6 +446,7 @@ void Process::logInstructionMessage(char code, string descriptor, bool stillRunn
  */
 unsigned int Process::processInstruction(char code, string descriptor, int runTime)
 {
+  pthread_t thread;
   unsigned int memory = 0;
   timeval referenceTime;
   int& numberOfMemoryAddresses = inUseMemory[0];
@@ -417,7 +468,16 @@ unsigned int Process::processInstruction(char code, string descriptor, int runTi
 
   }
 
-  // todo - add logic here for M(cache) operation
+  // check if this is a memory cache operation
+  if( code == 'M' && descriptor == "cache")
+  {
+    processQuantumNumber -= 2;
+
+    if( processQuantumNumber < 1 )
+    {
+      processQuantumNumber = 1;
+    }
+  }
 
   // if the code is I or O, spawn a thread to do the waiting operation
   if( code == 'I' || code == 'O')

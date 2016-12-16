@@ -45,8 +45,8 @@ void* threadRunner(void* _waitTime);
 class Process
 {
   public:
-    Process(int processId, SimulatorSettings simulatorSettings, Logger* logger, ResourceManager* resourceManager,
-            queue<Instruction> instructionsQueue );
+    Process(int processId, int defaultQuantumNumber, SimulatorSettings simulatorSettings, Logger* logger,
+            ResourceManager* resourceManager, queue<Instruction> instructionsQueue );
     ~Process();
 
     void Run(timeval startTime);
@@ -55,7 +55,7 @@ class Process
 
     int getCycleTime(char code, string descriptor);
 
-    void logInstructionMessage(char code, string descriptor, bool stillRunning, unsigned int memory);
+    void logInstructionMessage(char code, string descriptor, bool stillRunning, bool cyclesRemaining, unsigned int memory);
 
     unsigned int processInstruction(char code, string descriptor, int runTime);
 
@@ -71,11 +71,11 @@ class Process
     int processId;
     timeval referenceTime;
 
-    // thread object
-    pthread_t thread;
-
-    // process id number
-    int pid;
+    // for use in supporting interruptions
+    Instruction currentInstruction;
+    bool newInstruction;
+    int quantumNumber;
+    int processQuantumNumber;
 
     // all memory used by this process
     // the 0-th element indicates how many memory addresses are stored
@@ -87,14 +87,12 @@ class Process
     // Processing Times
     SimulatorSettings simulatorSettings;
 
-    // Logging Object
     Logger* logger;
 
     // Resource Manager Object
     ResourceManager* resourceManager;
     int resourceIndex;
 
-    // Queue for holding instructions
     queue<Instruction> instructionsQueue;
 };
 

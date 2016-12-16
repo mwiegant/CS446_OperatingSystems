@@ -253,7 +253,7 @@ void Simulation::createProcesses()
       }
 
       // create a new process
-      process = new Process(processId, settings, logger, resourceManager, processQueue);
+      process = new Process(processId, defaultQuantumNumber, settings, logger, resourceManager, processQueue);
 
       readyQueue.push( *process );
 
