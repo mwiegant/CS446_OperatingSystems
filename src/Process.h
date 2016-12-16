@@ -51,6 +51,12 @@ class Process
 
     void Run(timeval startTime);
 
+    ProcessControlBlock getProcessState();
+
+    int getNextInstructionCycles();
+
+    int getInstructionsRemaining();
+
   private:
 
     int getCycleTime(char code, string descriptor);

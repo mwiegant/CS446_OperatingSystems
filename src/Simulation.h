@@ -48,6 +48,11 @@ class Simulation
     // for initializing mutexes and semaphores
     void initializeSyncDevices();
 
+    // for running with different scheduling algorithms
+    void runRR(timeval startTime);
+    void runSFJ(timeval startTime);
+    void runSRTF(timeval startTime);
+
     // Configuration Information
     float osVersion;
     char mdf_filePath[50];
@@ -73,8 +78,7 @@ class Simulation
 
     // Queues for PCB implementation
     Process* runningProcess;
-    queue<Process> readyQueue;
-    queue<Process> waitingQueue;
+    vector<Process> readyQueue;
 
 };
 

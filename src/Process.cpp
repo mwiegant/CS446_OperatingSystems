@@ -78,7 +78,9 @@ Process::Process(int processId, int defaultQuantumNumber, SimulatorSettings simu
   inUseMemory[0] = 0;
 
   // setting this ensures that a new instruction is pulled from the instructionsQueue initially
-  currentInstruction.cycles = 0;
+  currentInstruction = instructionsQueue.front();
+  instructionsQueue.pop();
+  newInstruction = true;
 
   // set default state to ready
   processState = READY;
@@ -111,23 +113,11 @@ void Process::Run( timeval startTime )
   // change state to running
   processState = RUNNING;
 
-  while( !instructionsQueue.empty() )
+  if( !instructionsQueue.empty() )
   {
 
     // set running flag
     stillRunning = true;
-
-    // fetch the next instruction if this one has no cycles left to run
-    if(currentInstruction.cycles <= 0)
-    {
-      currentInstruction = instructionsQueue.front();
-      instructionsQueue.pop();
-      newInstruction = true;
-    }
-    else
-    {
-      newInstruction = false;
-    }
 
 //    printf("cycles remaining: %d\n", currentInstruction.cycles);
 
@@ -186,6 +176,17 @@ void Process::Run( timeval startTime )
     stillRunning = false;
     logInstructionMessage(code, descriptor, stillRunning, cyclesRemaining, memory);
 
+    // fetch the next instruction if this one has no cycles left to run
+    if(currentInstruction.cycles <= 0)
+    {
+      currentInstruction = instructionsQueue.front();
+      instructionsQueue.pop();
+      newInstruction = true;
+    }
+    else
+    {
+      newInstruction = false;
+    }
   }
 
   // terminate the process if it has no instructions left to run
@@ -206,6 +207,32 @@ void Process::Run( timeval startTime )
 
 }
 
+
+/*
+ * Returns the state of this process
+ */
+ProcessControlBlock Process::getProcessState()
+{
+  return processState;
+}
+
+
+/*
+ * Returns the number of cycles in the current instruction
+ */
+int Process::getNextInstructionCycles()
+{
+  return currentInstruction.cycles;
+}
+
+
+/*
+ * Returns how many instructions are remaining in this process
+ */
+int Process::getInstructionsRemaining()
+{
+  return instructionsQueue.size();
+}
 
 /*
  * Get the desired cycle time for a device based on

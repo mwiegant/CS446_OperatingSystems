@@ -111,36 +111,226 @@ bool Simulation::Initialize(char filePath[])
  */
 bool Simulation::Run()
 {
-  // for determining which process is running
-  int processCounter = 1;
   timeval startTime;
+
+  // load processes into the simulation from the master queue of instructions
+  createProcesses();
 
   // get the time
   gettimeofday( &startTime, NULL );
 
-  // divide the master queue of instructions into smaller queues inside processes
-  createProcesses();
-
-  logger->log("----------------------");
+  logger->log("-----------------------");
   logger->log("-- Meta-Data Metrics");
-  logger->log("----------------------");
+  logger->log("-----------------------");
 
-  // run through each process
-  while( readyQueue.size() > 0 )
+  // run the first process once, to get past the first start instruction in this process
+  runningProcess = &(readyQueue[0]);
+
+  runningProcess->Run(startTime);
+
+//  // run each process once, to get past the initial start instruction
+//  for(int i = 0; i < readyQueue.size(); i++)
+//  {
+//    runningProcess = &(readyQueue[i]);
+//
+//    runningProcess->Run(startTime);
+//  }
+
+  // run through each process according the the specified algorithm
+  if(cpuSchedulingCode == "RR")
   {
-    // dequeue the first process from the ready queue
-    runningProcess = &(readyQueue.front());
+    runRR(startTime);
+    return true;
+  }
+  else if(cpuSchedulingCode == "SJF")
+  {
+    runSFJ(startTime);
+    return true;
+  }
+  else if(cpuSchedulingCode == "SRTF")
+  {
+    runSRTF(startTime);
+    return true;
+  }
+  else
+  {
+    logger->log("Error - Invalid Scheduling Code. Valid codes are 'RR', 'SJF', or 'SRTF'");
+    return false;
+  }
+}
 
-    // run the first process
-    runningProcess->Run( startTime );
 
-    readyQueue.pop();
+/*
+ * Runs processes in a Round-Robin fashion. Each process is given a chance to run
+ * before the next process is then ran. This cycle continues until all processes have
+ * finished running all their instructions.
+ */
+void Simulation::runRR(timeval startTime)
+{
+  vector<int> processRunOrder;
+  int processingOrderIndex = 0;
+  int currentProcessIndex;
 
-    // increment process counter
-    processCounter++;
+  // determine the processing order
+  /// for RR, the processing order is simply in order
+  for(int i = 0; i < readyQueue.size(); i ++)
+  {
+    processRunOrder.push_back(i);
   }
 
-  return true;
+  // run processes until they are done
+  while(processRunOrder.size() > 0)
+  {
+    // get the index of the next process to run
+    currentProcessIndex = processRunOrder[processingOrderIndex];
+
+    // get the next process to run
+    runningProcess = &(readyQueue[currentProcessIndex]);
+
+    runningProcess->Run(startTime);
+
+    // check if the process is now terminated
+    if( runningProcess->getProcessState() == TERMINATED)
+    {
+      // erase the process from the list of processes to run
+      processRunOrder.erase( processRunOrder.begin() + processingOrderIndex);
+    }
+    else
+    {
+      processingOrderIndex++;
+    }
+
+    // reset the processing order index to 0 as needed
+    if(processingOrderIndex >= processRunOrder.size())
+    {
+      processingOrderIndex = 0;
+    }
+
+
+  }
+
+}
+
+
+/*
+ * Runs processes in a Shortest-Job-First fashion. Runs whichever process has
+ * the least cycles in its next instruction. Continually cycles through processes
+ * until every process has completed running all its instructions.
+ */
+void Simulation::runSFJ(timeval startTime)
+{
+  vector<int> processesRemaining;
+  int indexOfShortestJob;
+  int leastCycles;
+  int index;
+
+  // make a list of all processes
+  for(int i = 0; i < readyQueue.size(); i ++)
+  {
+    processesRemaining.push_back(i);
+  }
+
+  // run until there are no processes remaining
+  while(processesRemaining.size() > 0)
+  {
+
+    // give initial values
+    indexOfShortestJob = 0;
+    leastCycles = readyQueue[0].getNextInstructionCycles();
+
+    // determine which process to run next
+    for(int i = 0; i < processesRemaining.size(); i++)
+    {
+
+      index = processesRemaining[i];
+
+      if( readyQueue[index].getNextInstructionCycles() < leastCycles )
+      {
+        indexOfShortestJob = index;
+        leastCycles = readyQueue[index].getNextInstructionCycles();
+      }
+
+    }
+
+    // run the process
+    runningProcess = &(readyQueue[indexOfShortestJob]);
+
+    runningProcess->Run(startTime);
+
+    // check if the process is now terminated
+    if( runningProcess->getProcessState() == TERMINATED)
+    {
+      // erase the process from the list of processes to run
+      processesRemaining.erase( processesRemaining.begin() + indexOfShortestJob);
+    }
+
+
+  }
+}
+
+
+/*
+ * Runs processes in a Shortest-Remaining-Time-First fashion. Runs whichever process
+ * has the least instructions remaining (which is assumed to be the process that has
+ * the shortest time remaining). Continually runs in this way until all processes
+ * have finished running their instructions.
+ */
+void Simulation::runSRTF(timeval startTime)
+{
+  vector<int> processesRemaining;
+  int indexOfShortestJob;
+  int leastInstructions;
+  int index;
+
+  // make a list of all processes
+  for(int i = 0; i < readyQueue.size(); i ++)
+  {
+    processesRemaining.push_back(i);
+  }
+
+  // determine which process to run first
+  for(int i = 0; i < processesRemaining.size(); i++)
+  {
+
+    index = processesRemaining[i];
+
+    if( readyQueue[index].getInstructionsRemaining() < leastInstructions )
+    {
+      indexOfShortestJob = index;
+      leastInstructions = readyQueue[index].getInstructionsRemaining();
+    }
+  }
+
+  // run until there are no processes remaining
+  while(processesRemaining.size() > 0)
+  {
+    // run the process
+    runningProcess = &(readyQueue[indexOfShortestJob]);
+
+    runningProcess->Run(startTime);
+
+    // check if the process is now terminated
+    if( runningProcess->getProcessState() == TERMINATED)
+    {
+      // erase the process from the list of processes to run
+      processesRemaining.erase( processesRemaining.begin() + indexOfShortestJob);
+
+      // determine which process to run next
+      for(int i = 0; i < processesRemaining.size(); i++)
+      {
+
+        index = processesRemaining[i];
+
+        if( readyQueue[index].getInstructionsRemaining() < leastInstructions )
+        {
+          indexOfShortestJob = index;
+          leastInstructions = readyQueue[index].getInstructionsRemaining();
+        }
+      }
+    }
+
+
+  }
 }
 
 
@@ -255,7 +445,7 @@ void Simulation::createProcesses()
       // create a new process
       process = new Process(processId, defaultQuantumNumber, settings, logger, resourceManager, processQueue);
 
-      readyQueue.push( *process );
+      readyQueue.push_back( *process );
 
       processId++;
 
